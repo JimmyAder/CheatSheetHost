@@ -245,8 +245,20 @@
           "value": "run"
         },
         {
-          "key": "b main",
-          "value": "break"
+          "key": "info functions",
+          "value": "list functions"
+        },
+        {
+          "key": "b <function>",
+          "value": "breaks on function"
+        },
+        {
+          "key": "info breakpoints",
+          "value": "get breakpoint list"
+        },
+        {
+          "key": "delete 1",
+          "value": "delete breakpoint 1"
         },
         {
           "key": "i r",
@@ -259,6 +271,10 @@
         {
           "key": "x/16gx $rsp",
           "value": "stack"
+        },
+        {
+          "key": "x/s 0x4005d0",
+          "value": "view memory address"
         },
         {
           "key": "si/ni",
@@ -305,6 +321,10 @@
         {
           "key": "L",
           "value": "rename"
+        },
+        {
+          "key": "Ctrl + L",
+          "value": "retype"
         },
         {
           "key": "F",
