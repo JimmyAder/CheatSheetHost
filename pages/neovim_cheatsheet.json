@@ -1,0 +1,593 @@
+{
+  "slug": "neovim-cheatsheet",
+  "title": "NeoVim Cheat Sheet",
+  "subtitle": "Neovim quick refrence",
+  "sections": [
+    {
+      "title": "EDITING",
+      "items": [
+        {
+          "key": "r",
+          "value": "replace single character"
+        },
+        {
+          "key": "R",
+          "value": "enter replace mode"
+        },
+        {
+          "key": "J",
+          "value": "join line below to current one with one space in between them"
+        },
+        {
+          "key": "gJ",
+          "value": "join line below to current one with no spaces"
+        },
+        {
+          "key": "cc",
+          "value": "change entire line"
+        },
+        {
+          "key": "C",
+          "value": "change to the end of the line"
+        },
+        {
+          "key": "cm",
+          "value": "change with (m)odifier: wWeEbBfFtTia"
+        },
+        {
+          "key": "ciw",
+          "value": "change inner word"
+        },
+        {
+          "key": "s",
+          "value": "delete character and substitute text"
+        },
+        {
+          "key": "S",
+          "value": "delete line and substitute text"
+        },
+        {
+          "key": "xp",
+          "value": "transpose two letters (ia -> ai)"
+        },
+        {
+          "key": "u",
+          "value": "undo"
+        },
+        {
+          "key": "^r",
+          "value": "redo"
+        },
+        {
+          "key": ".",
+          "value": "repeat last command"
+        }
+      ]
+    },
+    {
+      "title": "CUT & PASTE",
+      "items": [
+        {
+          "key": "yy/Y",
+          "value": "yank single line"
+        },
+        {
+          "key": "#y",
+          "value": "yank # of lines"
+        },
+        {
+          "key": "yw",
+          "value": "yank from cursor to start of next word"
+        },
+        {
+          "key": "y#m",
+          "value": "yank # of lines with n movement (hjkl)"
+        },
+        {
+          "key": "\"ayy",
+          "value": "yank current line into named buffer a"
+        },
+        {
+          "key": "p",
+          "value": "put (paste) after the cursor"
+        },
+        {
+          "key": "P",
+          "value": "put (paste) before the cursor"
+        },
+        {
+          "key": "\"ap",
+          "value": "put text from buffer a before cursor"
+        },
+        {
+          "key": "dd",
+          "value": "delete current line"
+        },
+        {
+          "key": "#dd",
+          "value": "delete # of lines downward from cursor"
+        },
+        {
+          "key": "#dm",
+          "value": "delete # of lines with movement"
+        },
+        {
+          "key": "D",
+          "value": "delete to end of line"
+        },
+        {
+          "key": "dw",
+          "value": "delete until word"
+        },
+        {
+          "key": "x",
+          "value": "delete character at cursor"
+        },
+        {
+          "key": "X",
+          "value": "delete backwards from cursor"
+        }
+      ]
+    },
+    {
+      "title": "VERTICAL MOVEMENT",
+      "items": [
+        {
+          "key": "gg",
+          "value": "first line"
+        },
+        {
+          "key": "H",
+          "value": "cursor top of screen"
+        },
+        {
+          "key": "{",
+          "value": "beginning of paragraph"
+        },
+        {
+          "key": "(",
+          "value": "beginning of sentence"
+        },
+        {
+          "key": "#",
+          "value": "find word under cursor"
+        },
+        {
+          "key": "N",
+          "value": "(find) opposite direction"
+        },
+        {
+          "key": "M",
+          "value": "cursor middle of screen"
+        },
+        {
+          "key": "n",
+          "value": "(find) same direction"
+        },
+        {
+          "key": "*",
+          "value": "find word under cursor"
+        },
+        {
+          "key": ")",
+          "value": "end of sentence"
+        },
+        {
+          "key": "}",
+          "value": "end of paragraph"
+        },
+        {
+          "key": "L",
+          "value": "cursor to bottom of screen"
+        },
+        {
+          "key": "#G",
+          "value": "go to line #"
+        },
+        {
+          "key": "G",
+          "value": "end of file"
+        }
+      ]
+    },
+    {
+      "title": "SCREEN MOVEMENT",
+      "items": [
+        {
+          "key": "zz",
+          "value": "cursor line to center of screen"
+        },
+        {
+          "key": "zt",
+          "value": "cursor line to top of screen"
+        },
+        {
+          "key": "zb",
+          "value": "cursor line to bottom of screen"
+        },
+        {
+          "key": "^e",
+          "value": "move screen forward one line"
+        },
+        {
+          "key": "^y",
+          "value": "move screen backward one line"
+        },
+        {
+          "key": "^d",
+          "value": "move forward half a screen"
+        },
+        {
+          "key": "^u",
+          "value": "move backward half a screen"
+        },
+        {
+          "key": "^f",
+          "value": "move forward a full screen"
+        },
+        {
+          "key": "^b",
+          "value": "move backward a full screen"
+        }
+      ]
+    },
+    {
+      "title": "VISUAL MODE",
+      "items": [
+        {
+          "key": "v",
+          "value": "start visual mode, mark lines, then perform a command (like yank)"
+        },
+        {
+          "key": "V",
+          "value": "start linewise visual mode"
+        },
+        {
+          "key": "o",
+          "value": "move to other end of marked area"
+        },
+        {
+          "key": "^v",
+          "value": "start visual-block mode"
+        },
+        {
+          "key": "O",
+          "value": "move to other corner of a block"
+        },
+        {
+          "key": "aw",
+          "value": "highlight/select a word"
+        },
+        {
+          "key": "ab/B",
+          "value": "a block with ()/{}"
+        },
+        {
+          "key": "ib/B",
+          "value": "inner block with ()/{}"
+        },
+        {
+          "key": "Esc",
+          "value": "exit visual mode"
+        }
+      ]
+    },
+    {
+      "title": "MARK POSITION",
+      "items": [
+        {
+          "key": "mc",
+          "value": "mark current position as c"
+        },
+        {
+          "key": "`c",
+          "value": "move cursor to c"
+        },
+        {
+          "key": "''",
+          "value": "return to previous context"
+        },
+        {
+          "key": "'c",
+          "value": "move to the beginning of the line containing mark c"
+        },
+        {
+          "key": ":marks",
+          "value": "list of marks"
+        }
+      ]
+    },
+    {
+      "title": "REGISTERS",
+      "items": [
+        {
+          "key": ":reg",
+          "value": "show registers content"
+        },
+        {
+          "key": "\"xy",
+          "value": "yank into register x"
+        },
+        {
+          "key": "\"xp",
+          "value": "paste contents of register x"
+        }
+      ]
+    },
+    {
+      "title": "HOW TO THINK IN VIM",
+      "items": [
+        {
+          "key": "Idea",
+          "value": "Vim is an action language: VERB MODIFIER NOUN"
+        },
+        {
+          "key": "VERBS",
+          "value": "what you want to do \u2014 change, delete, yank, visual"
+        },
+        {
+          "key": "MODIFIERS",
+          "value": "how nouns are understood \u2014 inside, around, till, find"
+        },
+        {
+          "key": "NOUNS",
+          "value": "what you are editing \u2014 word, sentence, paragraph, block"
+        },
+        {
+          "key": "diw",
+          "value": "delete inside word"
+        },
+        {
+          "key": "ciw",
+          "value": "change the inner word, respecting delimitation"
+        },
+        {
+          "key": "ci\"",
+          "value": "change inside quotation marks to change string inside next marks"
+        },
+        {
+          "key": "ctX",
+          "value": "change everything from the cursor till the letter X"
+        },
+        {
+          "key": "vap",
+          "value": "visually select (around) this paragraph"
+        },
+        {
+          "key": "yi(",
+          "value": "copy everything inside the parentheses"
+        },
+        {
+          "key": "d2/foo",
+          "value": "delete from here until the second occurrence of 'foo'"
+        },
+        {
+          "key": "fy2wR",
+          "value": "find the next occurrence of 'y', move forward 2 words, and change word"
+        }
+      ]
+    },
+    {
+      "title": "INSERT MODE",
+      "items": [
+        {
+          "key": "i",
+          "value": "insert before the cursor"
+        },
+        {
+          "key": "I",
+          "value": "insert at the beginning of the line"
+        },
+        {
+          "key": "a",
+          "value": "append after the cursor"
+        },
+        {
+          "key": "A",
+          "value": "append at the end of the line"
+        },
+        {
+          "key": "o",
+          "value": "open new line below the current one"
+        },
+        {
+          "key": "O",
+          "value": "open new line above the current one"
+        },
+        {
+          "key": "ea",
+          "value": "append at the end of the word"
+        },
+        {
+          "key": "#gi",
+          "value": "insert text # times"
+        },
+        {
+          "key": "Esc",
+          "value": "exit insert mode"
+        }
+      ]
+    },
+    {
+      "title": "MACROS",
+      "items": [
+        {
+          "key": "qa",
+          "value": "record macro at register 'a'"
+        },
+        {
+          "key": "q",
+          "value": "stop recording macro"
+        },
+        {
+          "key": "@a",
+          "value": "run macro at register 'a'"
+        },
+        {
+          "key": "@@",
+          "value": "rerun last macro"
+        }
+      ]
+    },
+    {
+      "title": "SEARCH",
+      "items": [
+        {
+          "key": "/pattern",
+          "value": "search for pattern"
+        },
+        {
+          "key": "?pattern",
+          "value": "search for pattern backwards"
+        },
+        {
+          "key": "a",
+          "value": "the character a"
+        },
+        {
+          "key": "^a",
+          "value": "line beginning with char a"
+        },
+        {
+          "key": "[abc] / [io]h[a]n",
+          "value": "string containing any of the letters in brackets: john or joan"
+        },
+        {
+          "key": ".",
+          "value": "disable char special meaning"
+        },
+        {
+          "key": "*A",
+          "value": "A, AA, AAA"
+        },
+        {
+          "key": "x|y",
+          "value": "x or y"
+        },
+        {
+          "key": "r.d",
+          "value": "rad or rod or rid; period matches any single character"
+        },
+        {
+          "key": "\\< the",
+          "value": "the, theater or then"
+        },
+        {
+          "key": "the\\>",
+          "value": "the or breathe"
+        },
+        {
+          "key": "\\<the\\>",
+          "value": "the"
+        }
+      ]
+    },
+    {
+      "title": "REPLACE",
+      "items": [
+        {
+          "key": ":s/old/new",
+          "value": "replace next old with new"
+        },
+        {
+          "key": ":s/old/new/g",
+          "value": "replace instances of old with new in current line"
+        },
+        {
+          "key": ":%s/old/new/g",
+          "value": "replace all old with new throughout file"
+        },
+        {
+          "key": ":%s/old/new/gc",
+          "value": "replace all old with new in file with confirmations"
+        },
+        {
+          "key": ":2,9s/x/y/g/i",
+          "value": "replace instances of x with y between lines 2 to 9 inclusive, ignore case"
+        },
+        {
+          "key": ":[E/v]/1/x/d",
+          "value": "delete lines [containing/not containing x] inside note containing x"
+        }
+      ]
+    },
+    {
+      "title": "CASE",
+      "items": [
+        {
+          "key": "~",
+          "value": "switch char case, move forward"
+        },
+        {
+          "key": "VU/u",
+          "value": "uppercase/lowercase line"
+        },
+        {
+          "key": "VE/U/u",
+          "value": "uppercase/lowercase word"
+        },
+        {
+          "key": "vE/~ / g~~",
+          "value": "invert case for word/line"
+        }
+      ]
+    },
+    {
+      "title": "MISCELLANEOUS COMMANDS",
+      "items": [
+        {
+          "key": ":wq or ZZ",
+          "value": "write (save) and quit file"
+        },
+        {
+          "key": ":w!",
+          "value": "write file overriding protection"
+        },
+        {
+          "key": ":q!",
+          "value": "quit file (discarding any changes)"
+        },
+        {
+          "key": ":! command",
+          "value": "give UNIX command"
+        },
+        {
+          "key": ":r file",
+          "value": "read file contents into current file"
+        },
+        {
+          "key": ":map x <seq>",
+          "value": "define keystroke x as a command sequence"
+        },
+        {
+          "key": ":unmap x",
+          "value": "disable the map for x"
+        },
+        {
+          "key": ":ab a p",
+          "value": "abbreviate p as a; when a is typed in insert mode, it expands"
+        },
+        {
+          "key": ":una a",
+          "value": "disable abbreviation for a"
+        },
+        {
+          "key": ":set [all]",
+          "value": "display options set by user; if all is included, shows defaults too"
+        },
+        {
+          "key": ":set o",
+          "value": "activate option o"
+        },
+        {
+          "key": ":set ov",
+          "value": "assign value v to option o"
+        },
+        {
+          "key": ":set nou",
+          "value": "deactivate option u"
+        }
+      ]
+    }
+  ]
+}
