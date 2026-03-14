@@ -1,0 +1,523 @@
+{
+  "slug": "ctf-cheatsheet",
+  "title": "CTF / Reverse Engineering Master Poster",
+  "subtitle": "Responsive CRT cheat sheet page loaded from JSON.",
+  "sections": [
+    {
+      "title": "REGISTERS",
+      "items": [
+        {
+          "key": "RAX",
+          "value": "return value / accumulator"
+        },
+        {
+          "key": "RBX",
+          "value": "base / preserved register"
+        },
+        {
+          "key": "RCX",
+          "value": "counter / arg 4 SysV"
+        },
+        {
+          "key": "RDX",
+          "value": "data / arg 3 SysV"
+        },
+        {
+          "key": "RSI",
+          "value": "source index / arg 2"
+        },
+        {
+          "key": "RDI",
+          "value": "dest index / arg 1"
+        },
+        {
+          "key": "RSP",
+          "value": "stack pointer"
+        },
+        {
+          "key": "RBP",
+          "value": "frame pointer"
+        },
+        {
+          "key": "RIP",
+          "value": "instruction pointer"
+        },
+        {
+          "key": "EAX/AX/AL",
+          "value": "32 / 16 / low 8 bits"
+        }
+      ]
+    },
+    {
+      "title": "CALLING CONVENTIONS",
+      "items": [
+        {
+          "key": "Linux x64",
+          "value": "RDI RSI RDX RCX R8 R9"
+        },
+        {
+          "key": "Win x64",
+          "value": "RCX RDX R8 R9"
+        },
+        {
+          "key": "ret",
+          "value": "RAX"
+        },
+        {
+          "key": "align",
+          "value": "stack 16-byte aligned"
+        },
+        {
+          "key": "callee-save",
+          "value": "RBX RBP R12-R15"
+        },
+        {
+          "key": "syscall",
+          "value": "RAX; RDI RSI RDX R10 R8 R9"
+        },
+        {
+          "key": "Linux x86",
+          "value": "args on stack"
+        },
+        {
+          "key": "Win x86",
+          "value": "cdecl/stdcall/fastcall"
+        }
+      ]
+    },
+    {
+      "title": "FLAGS / JUMPS",
+      "items": [
+        {
+          "key": "ZF",
+          "value": "zero"
+        },
+        {
+          "key": "CF",
+          "value": "carry"
+        },
+        {
+          "key": "SF",
+          "value": "sign"
+        },
+        {
+          "key": "OF",
+          "value": "overflow"
+        },
+        {
+          "key": "JE/JZ",
+          "value": "equal"
+        },
+        {
+          "key": "JNE/JNZ",
+          "value": "not equal"
+        },
+        {
+          "key": "JG/JL",
+          "value": "signed compare"
+        },
+        {
+          "key": "JA/JB",
+          "value": "unsigned compare"
+        },
+        {
+          "key": "TEST",
+          "value": "bit compare"
+        }
+      ]
+    },
+    {
+      "title": "ASM CORE",
+      "items": [
+        {
+          "key": "MOV",
+          "value": "copy"
+        },
+        {
+          "key": "LEA",
+          "value": "address math"
+        },
+        {
+          "key": "PUSH/POP",
+          "value": "stack"
+        },
+        {
+          "key": "CALL/RET",
+          "value": "flow"
+        },
+        {
+          "key": "CMP",
+          "value": "compare"
+        },
+        {
+          "key": "ADD/SUB",
+          "value": "math"
+        },
+        {
+          "key": "XOR",
+          "value": "zero/toggle"
+        },
+        {
+          "key": "SHL/SHR",
+          "value": "shift"
+        },
+        {
+          "key": "ROL/ROR",
+          "value": "rotate"
+        }
+      ]
+    },
+    {
+      "title": "COMMON IDIOMS",
+      "items": [
+        {
+          "key": "xor eax,eax",
+          "value": "zero register"
+        },
+        {
+          "key": "test eax,eax",
+          "value": "null check"
+        },
+        {
+          "key": "lea eax,[eax+eax]",
+          "value": "mul 2"
+        },
+        {
+          "key": "and eax,0xff",
+          "value": "mask byte"
+        },
+        {
+          "key": "movzx",
+          "value": "zero extend"
+        },
+        {
+          "key": "movsx",
+          "value": "sign extend"
+        },
+        {
+          "key": "push rbp",
+          "value": "prologue"
+        },
+        {
+          "key": "leave",
+          "value": "epilogue"
+        }
+      ]
+    },
+    {
+      "title": "STACK / MEMORY",
+      "items": [
+        {
+          "key": "RET",
+          "value": "return addr"
+        },
+        {
+          "key": "saved RBP",
+          "value": "frame"
+        },
+        {
+          "key": "locals",
+          "value": "buffers"
+        },
+        {
+          "key": "heap",
+          "value": "malloc"
+        },
+        {
+          "key": ".text",
+          "value": "code"
+        },
+        {
+          "key": ".data",
+          "value": "data"
+        },
+        {
+          "key": ".bss",
+          "value": "zero"
+        }
+      ]
+    },
+    {
+      "title": "GDB",
+      "items": [
+        {
+          "key": "run/start",
+          "value": "run"
+        },
+        {
+          "key": "b main",
+          "value": "break"
+        },
+        {
+          "key": "i r",
+          "value": "regs"
+        },
+        {
+          "key": "x/10i $rip",
+          "value": "code"
+        },
+        {
+          "key": "x/16gx $rsp",
+          "value": "stack"
+        },
+        {
+          "key": "si/ni",
+          "value": "step"
+        },
+        {
+          "key": "bt",
+          "value": "backtrace"
+        }
+      ]
+    },
+    {
+      "title": "WINDBG",
+      "items": [
+        {
+          "key": "g",
+          "value": "go"
+        },
+        {
+          "key": "t/p",
+          "value": "step"
+        },
+        {
+          "key": "u",
+          "value": "disasm"
+        },
+        {
+          "key": "r",
+          "value": "regs"
+        },
+        {
+          "key": "db/dd/dq",
+          "value": "dump"
+        },
+        {
+          "key": "bp",
+          "value": "break"
+        }
+      ]
+    },
+    {
+      "title": "GHIDRA",
+      "items": [
+        {
+          "key": "L",
+          "value": "rename"
+        },
+        {
+          "key": "F",
+          "value": "function"
+        },
+        {
+          "key": "D",
+          "value": "disasm"
+        },
+        {
+          "key": ";",
+          "value": "comment"
+        },
+        {
+          "key": "X",
+          "value": "xrefs"
+        },
+        {
+          "key": "G",
+          "value": "goto"
+        }
+      ]
+    },
+    {
+      "title": "PYTHON RE",
+      "items": [
+        {
+          "key": "hex(255)",
+          "value": "int->hex"
+        },
+        {
+          "key": "int('ff',16)",
+          "value": "hex->int"
+        },
+        {
+          "key": "b.hex()",
+          "value": "bytes->hex"
+        },
+        {
+          "key": "bytes.fromhex()",
+          "value": "hex->bytes"
+        },
+        {
+          "key": "int.from_bytes",
+          "value": "bytes->int"
+        },
+        {
+          "key": "to_bytes",
+          "value": "int->bytes"
+        },
+        {
+          "key": "struct.unpack",
+          "value": "parse"
+        },
+        {
+          "key": "import base64",
+          "value": "b64"
+        },
+        {
+          "key": "b64encode",
+          "value": "encode"
+        },
+        {
+          "key": "b64decode",
+          "value": "decode"
+        }
+      ]
+    },
+    {
+      "title": "BITWISE / XOR",
+      "items": [
+        {
+          "key": "n&1",
+          "value": "low bit"
+        },
+        {
+          "key": "(n>>k)&1",
+          "value": "test"
+        },
+        {
+          "key": "n|=1<<k",
+          "value": "set"
+        },
+        {
+          "key": "n&=~(1<<k)",
+          "value": "clear"
+        },
+        {
+          "key": "n^=1<<k",
+          "value": "toggle"
+        },
+        {
+          "key": "b^0x20",
+          "value": "ASCII flip"
+        }
+      ]
+    },
+    {
+      "title": "CRYPTO / CTF",
+      "items": [
+        {
+          "key": "XOR",
+          "value": "common"
+        },
+        {
+          "key": "Base64",
+          "value": "decode"
+        },
+        {
+          "key": "ROT",
+          "value": "shift"
+        },
+        {
+          "key": "memcmp",
+          "value": "gate"
+        },
+        {
+          "key": "endianness",
+          "value": "LE/BE"
+        }
+      ]
+    },
+    {
+      "title": "ELF / PE",
+      "items": [
+        {
+          "key": ".text",
+          "value": "code"
+        },
+        {
+          "key": ".data",
+          "value": "data"
+        },
+        {
+          "key": ".bss",
+          "value": "zero"
+        },
+        {
+          "key": ".plt/.got",
+          "value": "dyn link"
+        },
+        {
+          "key": "readelf",
+          "value": "inspect"
+        },
+        {
+          "key": "objdump",
+          "value": "disasm"
+        },
+        {
+          "key": "strings",
+          "value": "find"
+        }
+      ]
+    },
+    {
+      "title": "PROTECTIONS",
+      "items": [
+        {
+          "key": "NX",
+          "value": "no exec"
+        },
+        {
+          "key": "ASLR",
+          "value": "random"
+        },
+        {
+          "key": "PIE",
+          "value": "reloc"
+        },
+        {
+          "key": "Canary",
+          "value": "stack"
+        },
+        {
+          "key": "RELRO",
+          "value": "GOT"
+        },
+        {
+          "key": "checksec",
+          "value": "summary"
+        }
+      ]
+    },
+    {
+      "title": "WORKFLOW",
+      "items": [
+        {
+          "key": "1",
+          "value": "strings"
+        },
+        {
+          "key": "2",
+          "value": "find input"
+        },
+        {
+          "key": "3",
+          "value": "trace"
+        },
+        {
+          "key": "4",
+          "value": "patch/script"
+        },
+        {
+          "key": "5",
+          "value": "retest"
+        }
+      ]
+    }
+  ],
+  "ascii": {
+    "title": "ASCII TABLE 0\u2013255",
+    "blocks_across": 6,
+    "min_width_px": 920
+  }
+}
