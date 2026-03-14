@@ -29,11 +29,20 @@ def ensure_defaults() -> None:
     if not TEMPLATE_FILE.exists():
         TEMPLATE_FILE.write_text(DEFAULT_TEMPLATE, encoding="utf-8")
     default_page = PAGES_DIR / "ctf-cheatsheet.json"
-    if not default_page.exists():
+    
+    # Check if any .json file exists in the directory
+    if not any(PAGES_DIR.glob("*.json")):
+        default_page = PAGES_DIR / "ctf-cheatsheet.json"
         default_page.write_text(json.dumps(DEFAULT_PAGE, indent=2), encoding="utf-8")
+
+    # default_page = PAGES_DIR / "ctf-cheatsheet.json"
+    # if not default_page.exists():
+    #     default_page.write_text(json.dumps(DEFAULT_PAGE, indent=2), encoding="utf-8")
+
 
 def load_template() -> str:
     return TEMPLATE_FILE.read_text(encoding="utf-8")
+
 
 def load_pages() -> dict[str, dict[str, Any]]:
     pages: dict[str, dict[str, Any]] = {}
@@ -48,6 +57,7 @@ def load_pages() -> dict[str, dict[str, Any]]:
         data["_source_file"] = file.name
         pages[slug] = data
     return pages
+
 
 def render_sections(page: dict[str, Any]) -> str:
     sections = page.get("sections", [])
@@ -79,25 +89,39 @@ def render_sections(page: dict[str, Any]) -> str:
         )
     return "".join(out)
 
+
 def render_ascii(page: dict[str, Any]) -> str:
     ascii_cfg = page.get("ascii")
     if not ascii_cfg:
         return ""
+
     blocks_across = int(ascii_cfg.get("blocks_across", 6))
-    title = html.escape(str(ascii_cfg.get("title", "ASCII TABLE 0–255")))
+    title = html.escape(str(ascii_cfg.get("title", "ASCII TABLE 1–255")))
     min_width = int(ascii_cfg.get("min_width_px", 920))
+
+    start = 1
+    end = 255
+    total_values = end - start + 1
+
+    rows_per_block = (total_values + blocks_across - 1) // blocks_across
+
     header = "".join("<th>Dec</th><th>Hex</th><th>Char</th>" for _ in range(blocks_across))
     rows = []
-    for base in range(0, 256, blocks_across):
+
+    for row_index in range(rows_per_block):
         tds = []
-        for j in range(blocks_across):
-            v = base + j
-            if v < 256:
+
+        for col_index in range(blocks_across):
+            v = start + col_index * rows_per_block + row_index
+
+            if v <= end:
                 ch = chr(v) if 32 <= v <= 126 else "."
-                tds.append(f"<td>{v}</td><td>{v:02X}</td><td>{html.escape(ch)}</td>")
+                tds.append(f"<td>{v}</td><td>Ox{v:02X}</td><td>{html.escape(ch)}</td>")
             else:
                 tds.append("<td></td><td></td><td></td>")
+
         rows.append("<tr>" + "".join(tds) + "</tr>")
+
     return f"""
     <section class="ascii-wrap">
       <div class="ascii-title">{title}</div>
@@ -111,6 +135,7 @@ def render_ascii(page: dict[str, Any]) -> str:
     </section>
     """
 
+
 def render_nav(pages: dict[str, dict[str, Any]], current_slug: str | None = None) -> str:
     links = []
     for slug, page in pages.items():
@@ -118,6 +143,7 @@ def render_nav(pages: dict[str, dict[str, Any]], current_slug: str | None = None
         active = " active" if slug == current_slug else ""
         links.append(f"<a class='nav-link{active}' href='/{slug}'>{title}</a>")
     return "".join(links)
+
 
 def render_home(pages: dict[str, dict[str, Any]], template: str) -> str:
     cards = []
@@ -147,6 +173,7 @@ def render_home(pages: dict[str, dict[str, Any]], template: str) -> str:
         .replace("{{ASCII_HTML}}", "")
     )
 
+
 def render_page(page: dict[str, Any], pages: dict[str, dict[str, Any]], template: str) -> str:
     title = html.escape(str(page.get("title", page["slug"])))
     subtitle = html.escape(str(page.get("subtitle", "")))
@@ -162,6 +189,8 @@ def render_page(page: dict[str, Any], pages: dict[str, dict[str, Any]], template
         .replace("{{ASCII_HTML}}", ascii_html)
     )
 
+
+
 class ContentHandler(BaseHTTPRequestHandler):
     server_version = "ContentDrivenLanHost/1.0"
 
@@ -172,11 +201,14 @@ class ContentHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+
     def _send_html(self, html_text: str, status: int = 200) -> None:
         self._send_bytes(html_text.encode("utf-8"), "text/html; charset=utf-8", status)
 
+
     def _send_json(self, payload: dict[str, Any], status: int = 200) -> None:
         self._send_bytes(json.dumps(payload, indent=2).encode("utf-8"), "application/json; charset=utf-8", status)
+
 
     def do_GET(self) -> None:
         pages = load_pages()
@@ -193,8 +225,11 @@ class ContentHandler(BaseHTTPRequestHandler):
             return
         self._send_json({"error": "Not found"}, status=404)
 
+
     def log_message(self, fmt: str, *args) -> None:
         print(f"[{self.log_date_time_string()}] {self.address_string()} - {fmt % args}")
+
+
 
 DEFAULT_TEMPLATE = ""
 
@@ -208,6 +243,7 @@ DEFAULT_PAGE = {
   ],
   "ascii": {"title":"ASCII TABLE 0–255","blocks_across":6,"min_width_px":920}
 }
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Host a content-driven LAN site from template + JSON files.")
@@ -235,6 +271,8 @@ def main() -> None:
         print("\nStopping server...")
     finally:
         server.server_close()
+
+
 
 if __name__ == "__main__":
     main()
