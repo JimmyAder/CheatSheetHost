@@ -1,0 +1,564 @@
+{
+  "slug": "c-cpp-for-reverse-engineering",
+  "title": "C / C++ for Reverse Engineering",
+  "subtitle": "Practical C and C++ reference for reading decompiler output, reconstructing logic, understanding compiler artifacts, and rebuilding routines from assembly or pseudocode.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Scope and Use",
+      "text": "This sheet is focused on understanding C and C++ as they appear in reverse engineering: compiler output, decompiler pseudocode, structs, classes, pointers, arrays, strings, vtables, calling conventions, and common patterns you reconstruct into source. The goal is to help turn assembly or pseudocode into readable models you can reason about, test, and reimplement."
+    },
+    {
+      "type": "text",
+      "title": "Why C / C++ Knowledge Matters in RE",
+      "text": "Most native binaries you reverse were originally written in C or C++. Even when a decompiler gives you pseudocode, you still need to recognize what the compiler probably started from: loops, switch dispatch, structs, classes, constructors, destructors, string handling, memory allocation, virtual calls, templates, and STL-like containers. Better C/C++ intuition means faster recognition."
+    },
+    {
+      "type": "table",
+      "title": "CORE C TYPES YOU SEE CONSTANTLY",
+      "items": [
+        {
+          "key": "char",
+          "value": "1-byte character or small integer"
+        },
+        {
+          "key": "unsigned char",
+          "value": "Byte values 0-255; common in buffers"
+        },
+        {
+          "key": "short / unsigned short",
+          "value": "16-bit integers"
+        },
+        {
+          "key": "int / unsigned int",
+          "value": "Usually 32-bit integers"
+        },
+        {
+          "key": "long long / unsigned long long",
+          "value": "Usually 64-bit integers"
+        },
+        {
+          "key": "size_t",
+          "value": "Unsigned size/index type"
+        },
+        {
+          "key": "void *",
+          "value": "Untyped pointer"
+        },
+        {
+          "key": "const char *",
+          "value": "C string pointer"
+        },
+        {
+          "key": "uint8_t/16_t/32_t/64_t",
+          "value": "Fixed-width integer types"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "POINTER PATTERNS",
+      "items": [
+        {
+          "key": "T *p",
+          "value": "Pointer to one object of type T"
+        },
+        {
+          "key": "p[i]",
+          "value": "Pointer indexing; same as *(p + i)"
+        },
+        {
+          "key": "*p",
+          "value": "Dereference pointer"
+        },
+        {
+          "key": "&x",
+          "value": "Address of x"
+        },
+        {
+          "key": "void *",
+          "value": "Untyped memory pointer; cast needed for use"
+        },
+        {
+          "key": "T **",
+          "value": "Pointer to pointer; common in out-params"
+        },
+        {
+          "key": "char *",
+          "value": "Often buffer or string, not always text"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ARRAY / BUFFER CLUES",
+      "items": [
+        {
+          "key": "buf[i]",
+          "value": "Array or pointer indexing"
+        },
+        {
+          "key": "memcpy/memmove",
+          "value": "Raw buffer copies"
+        },
+        {
+          "key": "memset",
+          "value": "Zeroing or filling memory"
+        },
+        {
+          "key": "strlen/strnlen",
+          "value": "Length of C strings"
+        },
+        {
+          "key": "strcmp/strncmp",
+          "value": "String comparison / validation gates"
+        },
+        {
+          "key": "Loop over bytes",
+          "value": "Parsing, hashing, encoding, decoding"
+        },
+        {
+          "key": "Fixed-size stack buffer",
+          "value": "Common local array in crackmes and parsers"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON C LIBRARY FUNCTIONS TO RECOGNIZE",
+      "items": [
+        {
+          "key": "malloc/free",
+          "value": "Heap allocation / deallocation"
+        },
+        {
+          "key": "calloc/realloc",
+          "value": "Zeroed alloc / resized alloc"
+        },
+        {
+          "key": "memcpy/memmove",
+          "value": "Byte copying"
+        },
+        {
+          "key": "memcmp",
+          "value": "Memory compare; common validation clue"
+        },
+        {
+          "key": "strcpy/strncpy",
+          "value": "String copies"
+        },
+        {
+          "key": "sprintf/snprintf",
+          "value": "Formatted output"
+        },
+        {
+          "key": "fopen/fread/fwrite",
+          "value": "File parsing or serialization"
+        },
+        {
+          "key": "atoi/strtol",
+          "value": "String to integer parsing"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON C CONTROL FLOW SHAPES",
+      "items": [
+        {
+          "key": "if / else",
+          "value": "cmp/test + conditional branches"
+        },
+        {
+          "key": "for loop",
+          "value": "Init, condition, increment pattern"
+        },
+        {
+          "key": "while loop",
+          "value": "Condition-controlled loop"
+        },
+        {
+          "key": "do-while",
+          "value": "At least one iteration before test"
+        },
+        {
+          "key": "switch",
+          "value": "Jump table or compare chain"
+        },
+        {
+          "key": "break / continue",
+          "value": "Early exits inside loops"
+        },
+        {
+          "key": "goto",
+          "value": "Compiler or manual control transfer; common in low-level code"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRUCT CLUES",
+      "items": [
+        {
+          "key": "Repeated offsets",
+          "value": "Likely fields in the same struct"
+        },
+        {
+          "key": "Mixed field sizes",
+          "value": "Strong sign of a real struct layout"
+        },
+        {
+          "key": "Pointer + offset use",
+          "value": "Decompiler likely needs a struct type"
+        },
+        {
+          "key": "Nested pointers",
+          "value": "Struct containing references to other objects"
+        },
+        {
+          "key": "Known headers",
+          "value": "File, packet, or object layout likely recoverable"
+        },
+        {
+          "key": "Write struct early",
+          "value": "Improves decompiler readability dramatically"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "C++ CLASS / OBJECT CLUES",
+      "items": [
+        {
+          "key": "this pointer",
+          "value": "Hidden first argument in many member functions"
+        },
+        {
+          "key": "vtable pointer",
+          "value": "Function pointer table at object start is common clue"
+        },
+        {
+          "key": "Constructor-like init",
+          "value": "Zero/init fields, assign vtable, allocate members"
+        },
+        {
+          "key": "Destructor-like cleanup",
+          "value": "Free members, reset state, call delete/free"
+        },
+        {
+          "key": "Indirect call through object",
+          "value": "Likely virtual call"
+        },
+        {
+          "key": "RTTI symbols",
+          "value": "Can reveal class hierarchy and type names"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON C++ FEATURES TO RECOGNIZE",
+      "items": [
+        {
+          "key": "Constructors / destructors",
+          "value": "Initialization and cleanup patterns"
+        },
+        {
+          "key": "Virtual functions",
+          "value": "Calls through vtable or indirect function table"
+        },
+        {
+          "key": "Inheritance",
+          "value": "Base/derived object layout with shared prefixes"
+        },
+        {
+          "key": "Templates",
+          "value": "Many instantiated functions with similar structure"
+        },
+        {
+          "key": "Exceptions",
+          "value": "Compiler-generated unwind and error paths"
+        },
+        {
+          "key": "operator overloads",
+          "value": "Functions with unusual but patterned names/shapes"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STL / STANDARD LIBRARY CLUES",
+      "items": [
+        {
+          "key": "std::string",
+          "value": "Length/capacity/data patterns; implementation varies"
+        },
+        {
+          "key": "std::vector",
+          "value": "Begin/end/capacity pointers or equivalent"
+        },
+        {
+          "key": "std::map/std::set",
+          "value": "Tree-like node structures"
+        },
+        {
+          "key": "std::function",
+          "value": "Wrapped callable objects"
+        },
+        {
+          "key": "iostream",
+          "value": "Verbose output/input call chains"
+        },
+        {
+          "key": "Implementation varies",
+          "value": "MSVC, libstdc++, libc++ differ significantly"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRING HANDLING CLUES",
+      "items": [
+        {
+          "key": "C strings",
+          "value": "Null-terminated char buffers"
+        },
+        {
+          "key": "Wide strings",
+          "value": "UTF-16 / wchar_t patterns"
+        },
+        {
+          "key": "Stack strings",
+          "value": "Built at runtime to avoid static detection"
+        },
+        {
+          "key": "String compares",
+          "value": "memcmp/strcmp/strncmp or manual loops"
+        },
+        {
+          "key": "Length before compare",
+          "value": "Fast reject before detailed validation"
+        },
+        {
+          "key": "std::string wrappers",
+          "value": "Can hide raw buffer operations underneath"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "MEMORY MANAGEMENT CLUES",
+      "items": [
+        {
+          "key": "new / delete",
+          "value": "C++ heap allocation / destruction"
+        },
+        {
+          "key": "malloc / free",
+          "value": "C-style heap management"
+        },
+        {
+          "key": "Placement new",
+          "value": "Object construction into existing storage"
+        },
+        {
+          "key": "RAII",
+          "value": "Automatic cleanup via object lifetime"
+        },
+        {
+          "key": "Double free / use-after-free clues",
+          "value": "Lifetime bugs visible in cleanup paths"
+        },
+        {
+          "key": "Ownership patterns",
+          "value": "Track who allocates and who releases"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "FUNCTION SIGNATURE RECOVERY",
+      "items": [
+        {
+          "key": "Count arguments",
+          "value": "Use calling convention and call sites"
+        },
+        {
+          "key": "Infer types from use",
+          "value": "Pointer arithmetic, compares, shifts, dereferences"
+        },
+        {
+          "key": "Infer return type",
+          "value": "How return value is used at callers"
+        },
+        {
+          "key": "Mark no-return funcs",
+          "value": "exit/abort/panic-like functions"
+        },
+        {
+          "key": "Use names semantically",
+          "value": "validate_key, parse_hdr, decrypt_buf"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON COMPILER ARTIFACTS",
+      "items": [
+        {
+          "key": "Stack canaries / cookies",
+          "value": "Compiler-inserted stack corruption checks"
+        },
+        {
+          "key": "Inline memset/memcpy",
+          "value": "Compiler may expand library calls"
+        },
+        {
+          "key": "Jump tables",
+          "value": "Compiled switch statements"
+        },
+        {
+          "key": "Thunk functions",
+          "value": "Tiny wrappers around imports or real functions"
+        },
+        {
+          "key": "Tail calls",
+          "value": "Function ends with jump into another function"
+        },
+        {
+          "key": "Optimization artifacts",
+          "value": "Source structure may look distorted in output"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "WHEN TO REBUILD LOGIC IN C OR C++",
+      "items": [
+        {
+          "key": "Parser recovery",
+          "value": "Good for struct-heavy file or packet formats"
+        },
+        {
+          "key": "Algorithm reconstruction",
+          "value": "Useful for checksum, validation, crypto-like logic"
+        },
+        {
+          "key": "Class behavior modeling",
+          "value": "Helpful when vtables and object state matter"
+        },
+        {
+          "key": "Interfacing with native libs",
+          "value": "Sometimes easier in C/C++ than Python"
+        },
+        {
+          "key": "Performance matters",
+          "value": "Large brute-force or emulation tasks may benefit"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "WHEN PYTHON IS STILL BETTER",
+      "items": [
+        {
+          "key": "Quick experiments",
+          "value": "Faster to write and test"
+        },
+        {
+          "key": "Parsing / decoding",
+          "value": "Bytes handling and scripting speed"
+        },
+        {
+          "key": "Brute force harnesses",
+          "value": "Easy iteration and instrumentation"
+        },
+        {
+          "key": "Proof-of-understanding",
+          "value": "Fastest way to verify reversed logic"
+        },
+        {
+          "key": "Automation",
+          "value": "Debugger integration, patch helpers, file pipelines"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: STRUCT REBUILD FROM OFFSETS",
+      "language": "c",
+      "code": "#include <stdint.h>\n\ntypedef struct Record {\n    uint32_t magic;\n    uint16_t version;\n    uint16_t flags;\n    uint32_t length;\n} Record;\n\n/* Good match when assembly repeatedly accesses:\n   [ptr+0], [ptr+4], [ptr+6], [ptr+8] */"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: REBUILDING A VALIDATION LOOP IN C",
+      "language": "c",
+      "code": "#include <stdint.h>\n#include <stddef.h>\n\nint check_key(const uint8_t *buf, size_t len) {\n    uint32_t acc = 0x1337;\n    if (len != 8) return 0;\n    for (size_t i = 0; i < len; i++) {\n        acc = ((acc << 5) + acc) ^ buf[i];\n    }\n    return acc == 0x52A4F91C;\n}"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: SIMPLE C++ CLASS SHAPE",
+      "language": "cpp",
+      "code": "#include <cstdint>\n#include <cstddef>\n\nclass Session {\npublic:\n    uint32_t state;\n    char *buffer;\n    size_t length;\n\n    Session() : state(0), buffer(nullptr), length(0) {}\n    ~Session() { delete[] buffer; }\n    bool valid() const { return state == 1 && buffer != nullptr; }\n};\n\n/* Useful mental model when decompiler shows constructor/destructor-like code. */"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: VIRTUAL CALL SHAPE",
+      "language": "cpp",
+      "code": "#include <cstdint>\n\nclass Base {\npublic:\n    virtual int run(int x) = 0;\n};\n\nint call_run(Base *obj, int x) {\n    return obj->run(x);\n}\n\n/* In assembly/decompiler this often becomes an indirect call through a vtable entry. */"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: TRANSLATING GHIDRA PSEUDOCODE TO C",
+      "language": "c",
+      "code": "#include <stddef.h>\n\n/* Decompiled shape:\n   acc = 0;\n   for (i = 0; i < len; i++) {\n       acc = acc + ((uint8_t)buf[i] ^ 0x20);\n   }\n   return acc == 300;\n*/\n\nint check(const unsigned char *buf, size_t len) {\n    unsigned int acc = 0;\n    for (size_t i = 0; i < len; i++) {\n        acc += (buf[i] ^ 0x20);\n    }\n    return acc == 300;\n}"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: CUSTOM FILE HEADER PARSER IN C",
+      "language": "c",
+      "code": "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\n\ntypedef struct Header {\n    uint32_t magic;\n    uint16_t type;\n    uint16_t size;\n} Header;\n\nint parse_header(const unsigned char *buf, size_t len, Header *out) {\n    if (len < sizeof(Header)) return 0;\n    memcpy(out, buf, sizeof(Header));\n    return 1;\n}"
+    },
+    {
+      "type": "text",
+      "title": "Crackmes and Input Generators",
+      "text": "For authorized crackmes and labs, a common workflow is to translate the target check routine into C, C++, or Python, verify it against the binary, and then solve for valid input or brute force a constrained search space. In practice, this is usually a 'check reimplementation' or 'input generator' rather than anything magical. C/C++ can be useful here when you want the rebuilt model to look very similar to the original native code."
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: C CHECK FUNCTION FOR A CRACKME LAB",
+      "language": "c",
+      "code": "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\n\nint check_serial(const char *s) {\n    uint32_t acc = 0;\n    size_t len = strlen(s);\n    if (len != 6) return 0;\n    for (size_t i = 0; i < len; i++) {\n        acc += ((unsigned char)s[i] ^ 0x5A) + (uint32_t)i;\n    }\n    return acc == 512;\n}\n\n/* Reimplement the check first, then search/generate inputs separately. */"
+    },
+    {
+      "type": "table",
+      "title": "GOOD HABITS WHEN REBUILDING C / C++ FROM RE",
+      "items": [
+        {
+          "key": "Match widths explicitly",
+          "value": "Use uint8_t/uint32_t/etc. when exact size matters"
+        },
+        {
+          "key": "Comment source assumptions",
+          "value": "Note where logic came from: asm, pseudocode, debugger"
+        },
+        {
+          "key": "Preserve order of operations",
+          "value": "Especially in bitwise and arithmetic transforms"
+        },
+        {
+          "key": "Prefer semantic names",
+          "value": "Rename vars to meaning, not temp1/temp2"
+        },
+        {
+          "key": "Validate with test vectors",
+          "value": "Compare rebuilt model against observed runtime behavior"
+        },
+        {
+          "key": "Start simple",
+          "value": "Correct first, pretty later"
+        }
+      ]
+    }
+  ]
+}
