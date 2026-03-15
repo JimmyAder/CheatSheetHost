@@ -1,6 +1,6 @@
 # CheatSheetHost
 
-A lightweight, content-driven web server for hosting interactive cheatsheets and reference materials. Perfect for CTF (Capture The Flag) challenges, reverse engineering, and technical documentation.
+A lightweight, content-driven web server for hosting interactive cheatsheets and reference materials. Perfect for CTF (Capture The Flag) challenges, reverse engineering, and technical documentation. This is best used in labs where you want to limit external or forgo external traffic while still having access to materal that is helpful.
 
 ## Features
 
