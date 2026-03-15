@@ -37,9 +37,9 @@ The server will automatically create default files if they don't exist.
 
 ## Links
 
-- **Repository**: [GitHub](https://github.com/yourusername/CheatSheetHost)
-- **Issues**: [Report Bugs](https://github.com/yourusername/CheatSheetHost/issues)
-- **Discussions**: [Q&A](https://github.com/yourusername/CheatSheetHost/discussions)
+- **Repository**: [GitHub](https://github.com/JimmyAder/CheatSheetHost)
+- **Issues**: [Report Bugs](https://github.com/JimmyAder/CheatSheetHost/issues)
+- **Discussions**: [Q&A](https://github.com/JimmyAder/CheatSheetHost/discussions)
 
 ## Usage
 
