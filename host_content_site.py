@@ -305,7 +305,6 @@ def render_page(page: dict[str, Any], pages: dict[str, dict[str, Any]], template
     )
 
 
-
 class ContentHandler(BaseHTTPRequestHandler):
     server_version = "ContentDrivenLanHost/1.0"
 
