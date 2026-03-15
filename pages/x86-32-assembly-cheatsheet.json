@@ -1,0 +1,322 @@
+{
+  "slug": "x86-32-assembly-cheatsheet",
+  "title": "x86 32-bit Assembly Cheat Sheet",
+  "subtitle": "32-bit x86 reference for reversing, debugging, exploit work, and low-level programming.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Scope",
+      "text": "This sheet focuses on classic 32-bit x86 concepts commonly seen in old crackmes, PE binaries, Linux ELF challenges, shellcode, and exploit development."
+    },
+    {
+      "type": "table",
+      "title": "GENERAL PURPOSE REGISTERS",
+      "items": [
+        {
+          "key": "EAX",
+          "value": "Accumulator, return value"
+        },
+        {
+          "key": "EBX",
+          "value": "Base register / callee-saved"
+        },
+        {
+          "key": "ECX",
+          "value": "Counter register"
+        },
+        {
+          "key": "EDX",
+          "value": "Data register"
+        },
+        {
+          "key": "ESI",
+          "value": "Source index"
+        },
+        {
+          "key": "EDI",
+          "value": "Destination index"
+        },
+        {
+          "key": "EBP",
+          "value": "Frame/base pointer"
+        },
+        {
+          "key": "ESP",
+          "value": "Stack pointer"
+        },
+        {
+          "key": "EIP",
+          "value": "Instruction pointer"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "REGISTER SIZE MAPPING",
+      "items": [
+        {
+          "key": "EAX / AX / AH / AL",
+          "value": "32 / 16 / high 8 / low 8"
+        },
+        {
+          "key": "EBX / BX / BH / BL",
+          "value": "32 / 16 / high 8 / low 8"
+        },
+        {
+          "key": "ECX / CX / CH / CL",
+          "value": "32 / 16 / high 8 / low 8"
+        },
+        {
+          "key": "EDX / DX / DH / DL",
+          "value": "32 / 16 / high 8 / low 8"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON INSTRUCTIONS",
+      "items": [
+        {
+          "key": "MOV",
+          "value": "Copy data"
+        },
+        {
+          "key": "LEA",
+          "value": "Address math"
+        },
+        {
+          "key": "PUSH / POP",
+          "value": "Stack ops"
+        },
+        {
+          "key": "CALL / RET",
+          "value": "Function call / return"
+        },
+        {
+          "key": "CMP / TEST",
+          "value": "Flag-setting comparisons"
+        },
+        {
+          "key": "ADD / SUB / INC / DEC",
+          "value": "Arithmetic"
+        },
+        {
+          "key": "AND / OR / XOR / NOT",
+          "value": "Bitwise logic"
+        },
+        {
+          "key": "SHL / SHR / SAR",
+          "value": "Shifts"
+        },
+        {
+          "key": "ROL / ROR",
+          "value": "Rotates"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "FLAGS",
+      "items": [
+        {
+          "key": "ZF",
+          "value": "Zero"
+        },
+        {
+          "key": "CF",
+          "value": "Carry"
+        },
+        {
+          "key": "SF",
+          "value": "Sign"
+        },
+        {
+          "key": "OF",
+          "value": "Overflow"
+        },
+        {
+          "key": "PF",
+          "value": "Parity"
+        },
+        {
+          "key": "DF",
+          "value": "Direction flag"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CONDITIONAL JUMPS",
+      "items": [
+        {
+          "key": "JE / JZ",
+          "value": "Equal / zero"
+        },
+        {
+          "key": "JNE / JNZ",
+          "value": "Not equal / nonzero"
+        },
+        {
+          "key": "JG / JGE",
+          "value": "Signed greater / greater or equal"
+        },
+        {
+          "key": "JL / JLE",
+          "value": "Signed less / less or equal"
+        },
+        {
+          "key": "JA / JAE",
+          "value": "Unsigned above / above or equal"
+        },
+        {
+          "key": "JB / JBE",
+          "value": "Unsigned below / below or equal"
+        },
+        {
+          "key": "JO / JNO",
+          "value": "Overflow / not overflow"
+        },
+        {
+          "key": "JS / JNS",
+          "value": "Sign / not sign"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STACK FRAME",
+      "items": [
+        {
+          "key": "push ebp",
+          "value": "Save old frame pointer"
+        },
+        {
+          "key": "mov ebp, esp",
+          "value": "Establish new frame"
+        },
+        {
+          "key": "sub esp, N",
+          "value": "Reserve locals"
+        },
+        {
+          "key": "leave",
+          "value": "mov esp, ebp ; pop ebp"
+        },
+        {
+          "key": "ret",
+          "value": "Return to caller"
+        },
+        {
+          "key": "args",
+          "value": "Usually at [ebp+8], [ebp+0Ch], ..."
+        },
+        {
+          "key": "locals",
+          "value": "Usually at [ebp-4], [ebp-8], ..."
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CALLING CONVENTIONS",
+      "items": [
+        {
+          "key": "cdecl",
+          "value": "Args on stack, caller cleans"
+        },
+        {
+          "key": "stdcall",
+          "value": "Args on stack, callee cleans"
+        },
+        {
+          "key": "fastcall",
+          "value": "Some args in ECX/EDX, rest on stack"
+        },
+        {
+          "key": "thiscall",
+          "value": "C++ this often in ECX"
+        },
+        {
+          "key": "return value",
+          "value": "EAX"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON RE PATTERNS",
+      "items": [
+        {
+          "key": "xor eax, eax",
+          "value": "Zero register"
+        },
+        {
+          "key": "test eax, eax",
+          "value": "Check null/zero"
+        },
+        {
+          "key": "cmp eax, 0",
+          "value": "Compare against zero"
+        },
+        {
+          "key": "movzx / movsx",
+          "value": "Zero/sign extend"
+        },
+        {
+          "key": "lea eax, [eax+eax*4]",
+          "value": "Cheap multiply"
+        },
+        {
+          "key": "call dword ptr [iat]",
+          "value": "Import call"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "LINUX INT 0x80 SYSCALLS",
+      "items": [
+        {
+          "key": "EAX",
+          "value": "Syscall number"
+        },
+        {
+          "key": "EBX",
+          "value": "Arg 1"
+        },
+        {
+          "key": "ECX",
+          "value": "Arg 2"
+        },
+        {
+          "key": "EDX",
+          "value": "Arg 3"
+        },
+        {
+          "key": "ESI",
+          "value": "Arg 4"
+        },
+        {
+          "key": "EDI",
+          "value": "Arg 5"
+        },
+        {
+          "key": "EBP",
+          "value": "Arg 6"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE PROLOGUE",
+      "language": "asm",
+      "code": "push ebp\nmov ebp, esp\nsub esp, 20h\n...\nleave\nret"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE VALIDATION",
+      "language": "asm",
+      "code": "cmp eax, 1234h\njne bad\nmov eax, 1\njmp done\nbad:\nxor eax, eax\ndone:\nret"
+    }
+  ]
+}

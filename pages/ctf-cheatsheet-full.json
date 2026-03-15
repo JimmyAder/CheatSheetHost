@@ -4,6 +4,7 @@
   "subtitle": "Responsive CRT cheat sheet page loaded from JSON.",
   "sections": [
     {
+      "type": "table",
       "title": "REGISTERS",
       "items": [
         {

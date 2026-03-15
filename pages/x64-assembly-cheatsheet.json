@@ -1,0 +1,736 @@
+{
+  "slug": "x64-assembly-cheatsheet",
+  "title": "x64 Assembly Cheat Sheet",
+  "subtitle": "Comprehensive x64 assembly reference for reverse engineering, debugging, and low-level programming.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Scope",
+      "text": "This sheet focuses on x86-64 / AMD64 concepts used in reverse engineering, debugging, crackmes, malware analysis, and low-level systems work. It mixes generic x64 concepts with Linux SysV and Windows x64 calling convention notes where useful."
+    },
+    {
+      "type": "table",
+      "title": "GENERAL PURPOSE REGISTERS",
+      "items": [
+        {
+          "key": "RAX",
+          "value": "Accumulator, return value, syscall number on Linux"
+        },
+        {
+          "key": "RBX",
+          "value": "Callee-saved general register"
+        },
+        {
+          "key": "RCX",
+          "value": "Counter, shift count, 4th arg in SysV, 1st arg in Win64"
+        },
+        {
+          "key": "RDX",
+          "value": "Data register, 3rd arg in SysV, 2nd arg in Win64"
+        },
+        {
+          "key": "RSI",
+          "value": "Source index, 2nd arg in SysV"
+        },
+        {
+          "key": "RDI",
+          "value": "Destination index, 1st arg in SysV"
+        },
+        {
+          "key": "RBP",
+          "value": "Frame/base pointer"
+        },
+        {
+          "key": "RSP",
+          "value": "Stack pointer"
+        },
+        {
+          "key": "R8",
+          "value": "5th arg in SysV, 3rd arg in Win64"
+        },
+        {
+          "key": "R9",
+          "value": "6th arg in SysV, 4th arg in Win64"
+        },
+        {
+          "key": "R10-R11",
+          "value": "Caller-saved temporaries"
+        },
+        {
+          "key": "R12-R15",
+          "value": "Callee-saved temporaries"
+        },
+        {
+          "key": "RIP",
+          "value": "Instruction pointer"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "REGISTER SIZE MAPPING",
+      "items": [
+        {
+          "key": "RAX / EAX / AX / AL",
+          "value": "64 / 32 / 16 / low 8 bits"
+        },
+        {
+          "key": "RBX / EBX / BX / BL",
+          "value": "64 / 32 / 16 / low 8 bits"
+        },
+        {
+          "key": "RCX / ECX / CX / CL",
+          "value": "64 / 32 / 16 / low 8 bits"
+        },
+        {
+          "key": "RDX / EDX / DX / DL",
+          "value": "64 / 32 / 16 / low 8 bits"
+        },
+        {
+          "key": "AH/BH/CH/DH",
+          "value": "High 8-bit halves of AX/BX/CX/DX"
+        },
+        {
+          "key": "R8D / R8W / R8B",
+          "value": "32 / 16 / 8-bit forms of R8"
+        },
+        {
+          "key": "Write to EAX",
+          "value": "Zero-extends into RAX upper 32 bits"
+        },
+        {
+          "key": "Write to AX/AL",
+          "value": "Does not clear upper bits automatically"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "FLAGS",
+      "items": [
+        {
+          "key": "ZF",
+          "value": "Zero Flag: result == 0"
+        },
+        {
+          "key": "CF",
+          "value": "Carry Flag: unsigned carry/borrow"
+        },
+        {
+          "key": "SF",
+          "value": "Sign Flag: sign bit set"
+        },
+        {
+          "key": "OF",
+          "value": "Overflow Flag: signed overflow"
+        },
+        {
+          "key": "PF",
+          "value": "Parity Flag"
+        },
+        {
+          "key": "AF",
+          "value": "Auxiliary carry"
+        },
+        {
+          "key": "DF",
+          "value": "Direction flag for string ops"
+        },
+        {
+          "key": "IF",
+          "value": "Interrupt enable flag"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON INSTRUCTIONS",
+      "items": [
+        {
+          "key": "MOV",
+          "value": "Copy data"
+        },
+        {
+          "key": "LEA",
+          "value": "Load effective address / address math"
+        },
+        {
+          "key": "XCHG",
+          "value": "Exchange operands"
+        },
+        {
+          "key": "PUSH / POP",
+          "value": "Stack operations"
+        },
+        {
+          "key": "CALL / RET",
+          "value": "Function call / return"
+        },
+        {
+          "key": "NOP",
+          "value": "No operation"
+        },
+        {
+          "key": "INT3",
+          "value": "Breakpoint interrupt"
+        },
+        {
+          "key": "SYSCALL",
+          "value": "Enter kernel mode"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ARITHMETIC",
+      "items": [
+        {
+          "key": "ADD / SUB",
+          "value": "Addition / subtraction"
+        },
+        {
+          "key": "INC / DEC",
+          "value": "Increment / decrement"
+        },
+        {
+          "key": "NEG",
+          "value": "Two's complement negate"
+        },
+        {
+          "key": "ADC / SBB",
+          "value": "Add/subtract with carry"
+        },
+        {
+          "key": "MUL / IMUL",
+          "value": "Unsigned / signed multiply"
+        },
+        {
+          "key": "DIV / IDIV",
+          "value": "Unsigned / signed divide"
+        },
+        {
+          "key": "CMP",
+          "value": "Subtract for flags only"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BITWISE / SHIFT / ROTATE",
+      "items": [
+        {
+          "key": "AND / OR / XOR",
+          "value": "Bitwise logic"
+        },
+        {
+          "key": "NOT",
+          "value": "Bitwise invert"
+        },
+        {
+          "key": "TEST",
+          "value": "AND for flags only"
+        },
+        {
+          "key": "SHL / SAL",
+          "value": "Shift left"
+        },
+        {
+          "key": "SHR",
+          "value": "Logical shift right"
+        },
+        {
+          "key": "SAR",
+          "value": "Arithmetic shift right"
+        },
+        {
+          "key": "ROL / ROR",
+          "value": "Rotate left / right"
+        },
+        {
+          "key": "RCL / RCR",
+          "value": "Rotate through carry"
+        },
+        {
+          "key": "BT / BTS / BTR / BTC",
+          "value": "Bit test / set / reset / complement"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CONTROL FLOW / CONDITIONAL JUMPS",
+      "items": [
+        {
+          "key": "JMP",
+          "value": "Unconditional jump"
+        },
+        {
+          "key": "JE / JZ",
+          "value": "Jump if equal / zero"
+        },
+        {
+          "key": "JNE / JNZ",
+          "value": "Jump if not equal"
+        },
+        {
+          "key": "JG / JNLE",
+          "value": "Signed greater"
+        },
+        {
+          "key": "JGE / JNL",
+          "value": "Signed greater or equal"
+        },
+        {
+          "key": "JL / JNGE",
+          "value": "Signed less"
+        },
+        {
+          "key": "JLE / JNG",
+          "value": "Signed less or equal"
+        },
+        {
+          "key": "JA / JNBE",
+          "value": "Unsigned above"
+        },
+        {
+          "key": "JAE / JNB",
+          "value": "Unsigned above or equal"
+        },
+        {
+          "key": "JB / JNAE",
+          "value": "Unsigned below"
+        },
+        {
+          "key": "JBE / JNA",
+          "value": "Unsigned below or equal"
+        },
+        {
+          "key": "JC / JNC",
+          "value": "Jump if carry / no carry"
+        },
+        {
+          "key": "JO / JNO",
+          "value": "Jump if overflow / not overflow"
+        },
+        {
+          "key": "JS / JNS",
+          "value": "Jump if sign / not sign"
+        },
+        {
+          "key": "LOOP",
+          "value": "Decrement RCX/ECX and jump if nonzero"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON PATTERNS",
+      "items": [
+        {
+          "key": "xor eax, eax",
+          "value": "Zero register cheaply"
+        },
+        {
+          "key": "test rax, rax",
+          "value": "Check null/zero"
+        },
+        {
+          "key": "cmp eax, 0",
+          "value": "Compare against zero"
+        },
+        {
+          "key": "lea rax, [rbx+rcx*4]",
+          "value": "Scaled integer math"
+        },
+        {
+          "key": "sub rsp, 20h",
+          "value": "Allocate stack frame"
+        },
+        {
+          "key": "mov [rbp-8], rax",
+          "value": "Store local variable"
+        },
+        {
+          "key": "movzx eax, byte [mem]",
+          "value": "Zero-extend small value"
+        },
+        {
+          "key": "movsx eax, byte [mem]",
+          "value": "Sign-extend small value"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ADDRESSING MODES",
+      "items": [
+        {
+          "key": "[rax]",
+          "value": "Memory at address in RAX"
+        },
+        {
+          "key": "[rax+8]",
+          "value": "Base + displacement"
+        },
+        {
+          "key": "[rbx+rcx]",
+          "value": "Base + index"
+        },
+        {
+          "key": "[rbx+rcx*4]",
+          "value": "Base + scaled index"
+        },
+        {
+          "key": "[rbx+rcx*4+10h]",
+          "value": "Base + scaled index + displacement"
+        },
+        {
+          "key": "[rip+offset]",
+          "value": "RIP-relative addressing"
+        },
+        {
+          "key": "qword ptr / dword ptr",
+          "value": "Operand size hints"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STACK BASICS",
+      "items": [
+        {
+          "key": "Stack grows",
+          "value": "Toward lower addresses"
+        },
+        {
+          "key": "PUSH",
+          "value": "RSP -= size; store value"
+        },
+        {
+          "key": "POP",
+          "value": "Load value; RSP += size"
+        },
+        {
+          "key": "CALL",
+          "value": "Push return address, then branch"
+        },
+        {
+          "key": "RET",
+          "value": "Pop return address into RIP"
+        },
+        {
+          "key": "16-byte align",
+          "value": "Required before calls on x64 ABIs"
+        },
+        {
+          "key": "Local vars",
+          "value": "Usually at [RBP-offset] or [RSP+offset]"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "FUNCTION PROLOGUE / EPILOGUE",
+      "items": [
+        {
+          "key": "push rbp",
+          "value": "Save old frame pointer"
+        },
+        {
+          "key": "mov rbp, rsp",
+          "value": "Establish new frame"
+        },
+        {
+          "key": "sub rsp, N",
+          "value": "Reserve local stack space"
+        },
+        {
+          "key": "leave",
+          "value": "mov rsp, rbp ; pop rbp"
+        },
+        {
+          "key": "ret",
+          "value": "Return to caller"
+        },
+        {
+          "key": "Frame-pointer omission",
+          "value": "Optimized code may use RSP directly"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "LINUX SYSV CALLING CONVENTION",
+      "items": [
+        {
+          "key": "Arg 1-6",
+          "value": "RDI, RSI, RDX, RCX, R8, R9"
+        },
+        {
+          "key": "Return",
+          "value": "RAX"
+        },
+        {
+          "key": "Caller-saved",
+          "value": "RAX, RCX, RDX, RSI, RDI, R8-R11"
+        },
+        {
+          "key": "Callee-saved",
+          "value": "RBX, RBP, R12-R15"
+        },
+        {
+          "key": "Float args",
+          "value": "XMM0-XMM7"
+        },
+        {
+          "key": "Stack",
+          "value": "16-byte aligned before call"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "WINDOWS X64 CALLING CONVENTION",
+      "items": [
+        {
+          "key": "Arg 1-4",
+          "value": "RCX, RDX, R8, R9"
+        },
+        {
+          "key": "Return",
+          "value": "RAX"
+        },
+        {
+          "key": "Shadow space",
+          "value": "Caller reserves 32 bytes"
+        },
+        {
+          "key": "Float args",
+          "value": "XMM0-XMM3"
+        },
+        {
+          "key": "Callee-saved",
+          "value": "RBX, RBP, RDI, RSI, R12-R15"
+        },
+        {
+          "key": "Stack",
+          "value": "16-byte aligned at call boundaries"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRING / REP INSTRUCTIONS",
+      "items": [
+        {
+          "key": "MOVSB/MOVSW/MOVSD/MOVSQ",
+          "value": "Copy string data"
+        },
+        {
+          "key": "STOSB/STOSW/STOSD/STOSQ",
+          "value": "Store accumulator to string"
+        },
+        {
+          "key": "LODSB/LODSW/LODSD/LODSQ",
+          "value": "Load string element"
+        },
+        {
+          "key": "SCASB/SCASW/SCASD/SCASQ",
+          "value": "Scan string"
+        },
+        {
+          "key": "CMPSB/CMPSW/CMPSD/CMPSQ",
+          "value": "Compare strings"
+        },
+        {
+          "key": "REP / REPE / REPNE",
+          "value": "Repeat prefixes using RCX"
+        },
+        {
+          "key": "CLD / STD",
+          "value": "Clear / set direction flag"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SIGN / ZERO EXTENSION",
+      "items": [
+        {
+          "key": "MOVZX",
+          "value": "Move with zero extension"
+        },
+        {
+          "key": "MOVSX",
+          "value": "Move with sign extension"
+        },
+        {
+          "key": "MOVSXD",
+          "value": "Sign-extend 32-bit to 64-bit"
+        },
+        {
+          "key": "CBW/CWDE/CDQE",
+          "value": "Sign extension through AL/AX/EAX"
+        },
+        {
+          "key": "CWD/CDQ/CQO",
+          "value": "Extend AX/EAX/RAX into DX:AX / EDX:EAX / RDX:RAX"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SETCC / CMOVCC",
+      "items": [
+        {
+          "key": "SETE/SETZ",
+          "value": "Set byte if equal / zero"
+        },
+        {
+          "key": "SETNE/SETNZ",
+          "value": "Set byte if not equal"
+        },
+        {
+          "key": "SETG/SETL",
+          "value": "Set byte on signed compare"
+        },
+        {
+          "key": "SETA/SETB",
+          "value": "Set byte on unsigned compare"
+        },
+        {
+          "key": "CMOVE/CMOVNE",
+          "value": "Conditional move"
+        },
+        {
+          "key": "CMOVG/CMOVL",
+          "value": "Conditional signed move"
+        },
+        {
+          "key": "CMOVA/CMOVB",
+          "value": "Conditional unsigned move"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "AT&T VS INTEL SYNTAX",
+      "items": [
+        {
+          "key": "Intel",
+          "value": "mov rax, [rbx]"
+        },
+        {
+          "key": "AT&T",
+          "value": "mov (%rbx), %rax"
+        },
+        {
+          "key": "Intel order",
+          "value": "dest, src"
+        },
+        {
+          "key": "AT&T order",
+          "value": "src, dest"
+        },
+        {
+          "key": "AT&T prefixes",
+          "value": "%reg, $imm"
+        },
+        {
+          "key": "AT&T suffixes",
+          "value": "b/w/l/q for size"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "LINUX SYSCALL REGISTERS",
+      "items": [
+        {
+          "key": "RAX",
+          "value": "Syscall number"
+        },
+        {
+          "key": "RDI",
+          "value": "Arg 1"
+        },
+        {
+          "key": "RSI",
+          "value": "Arg 2"
+        },
+        {
+          "key": "RDX",
+          "value": "Arg 3"
+        },
+        {
+          "key": "R10",
+          "value": "Arg 4"
+        },
+        {
+          "key": "R8",
+          "value": "Arg 5"
+        },
+        {
+          "key": "R9",
+          "value": "Arg 6"
+        },
+        {
+          "key": "Return",
+          "value": "RAX"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON DEBUGGING / RE CLUES",
+      "items": [
+        {
+          "key": "cmp + jne/je",
+          "value": "Common validation / gate logic"
+        },
+        {
+          "key": "xor loop",
+          "value": "Obfuscation / decryption candidate"
+        },
+        {
+          "key": "rol/ror/add/sub loops",
+          "value": "Custom encoders / hashing"
+        },
+        {
+          "key": "lea chains",
+          "value": "Compiler-generated integer math"
+        },
+        {
+          "key": "test reg, reg",
+          "value": "Null / zero branch decision"
+        },
+        {
+          "key": "call qword [rip+...]",
+          "value": "IAT / PLT / GOT based call"
+        },
+        {
+          "key": "mov [rsp+...]",
+          "value": "Spill / temp / shadow space"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE FUNCTION PROLOGUE",
+      "language": "asm",
+      "code": "push rbp\nmov rbp, rsp\nsub rsp, 20h\nmov [rbp-8], rdi\nmov [rbp-10h], rsi\n...\nleave\nret"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE CONDITIONAL BRANCH",
+      "language": "asm",
+      "code": "cmp eax, 1337h\njne fail\nmov eax, 1\njmp done\nfail:\nxor eax, eax\ndone:\nret"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE RIP-RELATIVE ACCESS",
+      "language": "asm",
+      "code": "lea rax, [rip+message]\nmov rdi, rax\ncall puts\n...\nmessage: db 'hello',0"
+    }
+  ]
+}

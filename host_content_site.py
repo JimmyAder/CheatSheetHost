@@ -61,32 +61,85 @@ def load_pages() -> dict[str, dict[str, Any]]:
 
 def render_sections(page: dict[str, Any]) -> str:
     sections = page.get("sections", [])
-    out = []
+    out: list[str] = []
+
     for section in sections:
         title = html.escape(str(section.get("title", "Untitled")))
-        items = section.get("items", [])
-        rows = []
-        for item in items:
-            if isinstance(item, dict):
-                key = html.escape(str(item.get("key", "")))
-                value = html.escape(str(item.get("value", "")))
-            elif isinstance(item, list) and len(item) >= 2:
-                key = html.escape(str(item[0]))
-                value = html.escape(str(item[1]))
-            else:
-                key = ""
-                value = html.escape(str(item))
-            rows.append(f"<tr><td class='k'>{key}</td><td class='v'>{value}</td></tr>")
+        section_type = str(section.get("type", "table")).strip().lower()
+
+        if section_type == "text":
+            text = html.escape(str(section.get("text", ""))).replace("\n", "<br>")
+            out.append(
+                f"""
+                <section class="card">
+                  <div class="card-title">{title}</div>
+                  <div class="content-block text-block">
+                    {text}
+                  </div>
+                </section>
+                """
+            )
+            continue
+
+
+        if section_type == "table":
+            items = section.get("items", [])
+            rows: list[str] = []
+
+            for item in items:
+                if isinstance(item, dict):
+                    key = html.escape(str(item.get("key", "")))
+                    value = html.escape(str(item.get("value", "")))
+                elif isinstance(item, list) and len(item) >= 2:
+                    key = html.escape(str(item[0]))
+                    value = html.escape(str(item[1]))
+                else:
+                    key = ""
+                    value = html.escape(str(item))
+
+                rows.append(f"<tr><td class='k'>{key}</td><td class='v'>{value}</td></tr>")
+
+            out.append(
+                f"""
+                <section class="card">
+                  <div class="card-title">{title}</div>
+                  <table class="mini-table">
+                    {''.join(rows)}
+                  </table>
+                </section>
+                """
+            )
+            continue
+
+
+        if section_type == "code":
+            language = html.escape(str(section.get("language", "text")).strip().lower())
+            code = html.escape(str(section.get("code", "")))
+
+            out.append(
+                f"""
+                <section class="card card-wide">
+                  <div class="card-title">
+                    {title} <span class="code-lang">{language}</span>
+                  </div>
+                  <pre class="code-block"><code class="language-{language}">{code}</code></pre>
+                </section>
+                """
+            )
+            continue
+        
+        # Optional fallback for unsupported section types
         out.append(
             f"""
             <section class="card">
               <div class="card-title">{title}</div>
-              <table class="mini-table">
-                {''.join(rows)}
-              </table>
+              <div class="content-block text-block">
+                Unsupported section type: {html.escape(section_type)}
+              </div>
             </section>
             """
         )
+
     return "".join(out)
 
 

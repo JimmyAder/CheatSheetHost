@@ -1,0 +1,181 @@
+{
+  "slug": "x64-shellcode-syscalls-cheatsheet",
+  "title": "x64 Shellcode / Syscall Notes",
+  "subtitle": "Compact x64 syscall and shellcode-oriented notes for low-level study and CTF labs.",
+  "sections": [
+    {
+      "type": "table",
+      "title": "LINUX X64 SYSCALL CONVENTION",
+      "items": [
+        {
+          "key": "RAX",
+          "value": "Syscall number"
+        },
+        {
+          "key": "RDI",
+          "value": "Arg 1"
+        },
+        {
+          "key": "RSI",
+          "value": "Arg 2"
+        },
+        {
+          "key": "RDX",
+          "value": "Arg 3"
+        },
+        {
+          "key": "R10",
+          "value": "Arg 4"
+        },
+        {
+          "key": "R8",
+          "value": "Arg 5"
+        },
+        {
+          "key": "R9",
+          "value": "Arg 6"
+        },
+        {
+          "key": "syscall",
+          "value": "Enter kernel"
+        },
+        {
+          "key": "Return",
+          "value": "RAX"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON LINUX SYSCALLS",
+      "items": [
+        {
+          "key": "read",
+          "value": "Read from fd"
+        },
+        {
+          "key": "write",
+          "value": "Write to fd"
+        },
+        {
+          "key": "open/openat",
+          "value": "Open file"
+        },
+        {
+          "key": "close",
+          "value": "Close file"
+        },
+        {
+          "key": "mmap",
+          "value": "Map memory"
+        },
+        {
+          "key": "mprotect",
+          "value": "Change memory protection"
+        },
+        {
+          "key": "execve",
+          "value": "Execute program"
+        },
+        {
+          "key": "exit",
+          "value": "Terminate process"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SHELLCODE CONCERNS",
+      "items": [
+        {
+          "key": "Null bytes",
+          "value": "Often avoided in injected payloads"
+        },
+        {
+          "key": "Position independence",
+          "value": "Avoid absolute addresses"
+        },
+        {
+          "key": "Register clobbering",
+          "value": "Know what your code destroys"
+        },
+        {
+          "key": "Stack alignment",
+          "value": "May matter for called code"
+        },
+        {
+          "key": "Bad chars",
+          "value": "Transport/input dependent"
+        },
+        {
+          "key": "Syscall vs libc",
+          "value": "Shellcode often uses direct syscalls"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON TECHNIQUES",
+      "items": [
+        {
+          "key": "xor reg, reg",
+          "value": "Zero without immediate null bytes"
+        },
+        {
+          "key": "push/pop",
+          "value": "Move immediates indirectly"
+        },
+        {
+          "key": "call/pop",
+          "value": "Get RIP-like position"
+        },
+        {
+          "key": "lea reg, [rip+...]",
+          "value": "Position-independent addressing"
+        },
+        {
+          "key": "short jumps",
+          "value": "Compact control flow"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "RELEVANT MEMORY TERMS",
+      "items": [
+        {
+          "key": "RWX",
+          "value": "Readable, writable, executable"
+        },
+        {
+          "key": "NX/DEP",
+          "value": "Non-executable memory"
+        },
+        {
+          "key": "ASLR",
+          "value": "Randomized memory layout"
+        },
+        {
+          "key": "PIE",
+          "value": "Randomized binary base"
+        },
+        {
+          "key": "ROP",
+          "value": "Reuse existing code gadgets"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "MINIMAL SYSCALL SHAPE",
+      "language": "asm",
+      "code": "mov rax, SYS_write\nmov rdi, 1\nmov rsi, buf\nmov rdx, len\nsyscall"
+    },
+    {
+      "type": "code",
+      "title": "ZEROING / SETUP EXAMPLE",
+      "language": "asm",
+      "code": "xor rax, rax\nxor rdi, rdi\nmov al, 60\nsyscall"
+    }
+  ]
+}

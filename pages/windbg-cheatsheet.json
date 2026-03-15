@@ -1,0 +1,199 @@
+{
+  "slug": "windbg-cheatsheet",
+  "title": "WinDbg Quick Reference",
+  "subtitle": "Common WinDbg commands for user-mode and general reverse engineering workflows.",
+  "sections": [
+    {
+      "type": "table",
+      "title": "EXECUTION CONTROL",
+      "items": [
+        {
+          "key": "g",
+          "value": "Go / continue"
+        },
+        {
+          "key": "t",
+          "value": "Trace into"
+        },
+        {
+          "key": "p",
+          "value": "Step over"
+        },
+        {
+          "key": "gu",
+          "value": "Go up / finish function"
+        },
+        {
+          "key": "pa addr",
+          "value": "Step until address"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BREAKPOINTS",
+      "items": [
+        {
+          "key": "bp addr",
+          "value": "Set breakpoint at address"
+        },
+        {
+          "key": "bu symbol",
+          "value": "Set unresolved bp by symbol"
+        },
+        {
+          "key": "bl",
+          "value": "List breakpoints"
+        },
+        {
+          "key": "bc *",
+          "value": "Clear all breakpoints"
+        },
+        {
+          "key": "bd N / be N",
+          "value": "Disable / enable breakpoint"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "REGISTERS / STACK / DISASM",
+      "items": [
+        {
+          "key": "r",
+          "value": "Show registers"
+        },
+        {
+          "key": "r @rax",
+          "value": "Show specific register"
+        },
+        {
+          "key": "k",
+          "value": "Stack backtrace"
+        },
+        {
+          "key": "kv",
+          "value": "Verbose backtrace"
+        },
+        {
+          "key": "u addr",
+          "value": "Disassemble"
+        },
+        {
+          "key": "ub addr",
+          "value": "Disassemble backward"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "MEMORY DISPLAY",
+      "items": [
+        {
+          "key": "db addr",
+          "value": "Dump bytes"
+        },
+        {
+          "key": "dd addr",
+          "value": "Dump dwords"
+        },
+        {
+          "key": "dq addr",
+          "value": "Dump qwords"
+        },
+        {
+          "key": "da addr",
+          "value": "Dump ASCII string"
+        },
+        {
+          "key": "du addr",
+          "value": "Dump Unicode string"
+        },
+        {
+          "key": "dps addr",
+          "value": "Dump pointers and symbols"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "MODULES / SYMBOLS",
+      "items": [
+        {
+          "key": "lm",
+          "value": "List modules"
+        },
+        {
+          "key": "lmv m mod",
+          "value": "Verbose module info"
+        },
+        {
+          "key": "x module!*",
+          "value": "Search symbols"
+        },
+        {
+          "key": "ln addr",
+          "value": "Nearest symbol to address"
+        },
+        {
+          "key": "!sym noisy",
+          "value": "Verbose symbol loading"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "USEFUL EXTENSIONS",
+      "items": [
+        {
+          "key": "!peb",
+          "value": "Show Process Environment Block"
+        },
+        {
+          "key": "!teb",
+          "value": "Show Thread Environment Block"
+        },
+        {
+          "key": "!address",
+          "value": "Memory region info"
+        },
+        {
+          "key": "!heap -s",
+          "value": "Heap summary"
+        },
+        {
+          "key": "!analyze -v",
+          "value": "Crash analysis"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SEARCHING / PATCHING",
+      "items": [
+        {
+          "key": "s -b start end pattern",
+          "value": "Search byte pattern"
+        },
+        {
+          "key": "eb/ed/eq addr value",
+          "value": "Edit byte/dword/qword"
+        },
+        {
+          "key": "a addr",
+          "value": "Assemble instructions"
+        },
+        {
+          "key": "ba r/w/x size addr",
+          "value": "Hardware break on access"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "COMMON SESSION",
+      "language": "text",
+      "code": "bp kernel32!CreateFileW\ng\nr\nk\nu @rip\ndq @rsp"
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "slug": "gdb-x64dbg-cheatsheet",
+  "title": "GDB + x64dbg Cheat Sheet",
+  "subtitle": "Quick reference for Linux GDB and Windows x64dbg workflows.",
+  "sections": [
+    {
+      "type": "table",
+      "title": "GDB STARTUP / RUNNING",
+      "items": [
+        {
+          "key": "gdb ./prog",
+          "value": "Open binary"
+        },
+        {
+          "key": "run",
+          "value": "Run program"
+        },
+        {
+          "key": "start",
+          "value": "Break at early startup/main"
+        },
+        {
+          "key": "attach PID",
+          "value": "Attach to process"
+        },
+        {
+          "key": "set disassembly-flavor intel",
+          "value": "Use Intel syntax"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "GDB BREAKPOINTS",
+      "items": [
+        {
+          "key": "b main",
+          "value": "Break on symbol"
+        },
+        {
+          "key": "b *0x401000",
+          "value": "Break on address"
+        },
+        {
+          "key": "info break",
+          "value": "List breakpoints"
+        },
+        {
+          "key": "delete N",
+          "value": "Delete breakpoint N"
+        },
+        {
+          "key": "disable N / enable N",
+          "value": "Toggle breakpoint"
+        },
+        {
+          "key": "watch expr",
+          "value": "Watchpoint on expression"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "GDB STEPPING",
+      "items": [
+        {
+          "key": "si",
+          "value": "Step one instruction"
+        },
+        {
+          "key": "ni",
+          "value": "Next instruction"
+        },
+        {
+          "key": "step",
+          "value": "Step source"
+        },
+        {
+          "key": "next",
+          "value": "Next source line"
+        },
+        {
+          "key": "finish",
+          "value": "Run until current function returns"
+        },
+        {
+          "key": "continue",
+          "value": "Resume execution"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "GDB INSPECTION",
+      "items": [
+        {
+          "key": "i r",
+          "value": "Show registers"
+        },
+        {
+          "key": "x/10i $rip",
+          "value": "Show instructions"
+        },
+        {
+          "key": "x/16gx $rsp",
+          "value": "Show 64-bit stack words"
+        },
+        {
+          "key": "x/s addr",
+          "value": "Show string"
+        },
+        {
+          "key": "disas main",
+          "value": "Disassemble function"
+        },
+        {
+          "key": "bt",
+          "value": "Backtrace"
+        },
+        {
+          "key": "p/x expr",
+          "value": "Print expression in hex"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "GDB MEMORY FORMATS",
+      "items": [
+        {
+          "key": "x/b",
+          "value": "Byte"
+        },
+        {
+          "key": "x/h",
+          "value": "Halfword"
+        },
+        {
+          "key": "x/w",
+          "value": "Word (32-bit)"
+        },
+        {
+          "key": "x/g",
+          "value": "Giant word (64-bit)"
+        },
+        {
+          "key": "x/i",
+          "value": "Instruction"
+        },
+        {
+          "key": "x/s",
+          "value": "String"
+        },
+        {
+          "key": "x/20xb addr",
+          "value": "20 bytes in hex"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "x64dbg BASICS",
+      "items": [
+        {
+          "key": "F9",
+          "value": "Run / continue"
+        },
+        {
+          "key": "F7",
+          "value": "Step into"
+        },
+        {
+          "key": "F8",
+          "value": "Step over"
+        },
+        {
+          "key": "Ctrl+F9",
+          "value": "Execute until return"
+        },
+        {
+          "key": "F2",
+          "value": "Toggle breakpoint"
+        },
+        {
+          "key": "Ctrl+G",
+          "value": "Go to address/expression"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "x64dbg VIEWS",
+      "items": [
+        {
+          "key": "CPU pane",
+          "value": "Disassembly / regs / stack"
+        },
+        {
+          "key": "Dump pane",
+          "value": "Raw memory view"
+        },
+        {
+          "key": "Stack pane",
+          "value": "Stack contents"
+        },
+        {
+          "key": "Symbols",
+          "value": "Imports/exports/symbols"
+        },
+        {
+          "key": "Memory map",
+          "value": "Allocated memory regions"
+        },
+        {
+          "key": "References",
+          "value": "Cross-reference results"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "x64dbg COMMON ACTIONS",
+      "items": [
+        {
+          "key": "Right-click -> Follow",
+          "value": "Follow operand/address"
+        },
+        {
+          "key": "Right-click -> Assemble",
+          "value": "Patch instructions"
+        },
+        {
+          "key": "Right-click -> Binary -> Edit",
+          "value": "Patch bytes"
+        },
+        {
+          "key": "Search for -> All referenced strings",
+          "value": "Find strings"
+        },
+        {
+          "key": "Search for -> Pattern",
+          "value": "Find byte patterns"
+        },
+        {
+          "key": "Break on access/write",
+          "value": "Memory breakpoints"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "DEBUGGING WORKFLOW",
+      "items": [
+        {
+          "key": "1",
+          "value": "Find input path"
+        },
+        {
+          "key": "2",
+          "value": "Break on compare / validation"
+        },
+        {
+          "key": "3",
+          "value": "Trace transforms"
+        },
+        {
+          "key": "4",
+          "value": "Inspect regs / stack / memory"
+        },
+        {
+          "key": "5",
+          "value": "Patch or script around checks"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "GDB MEMORY CHECK",
+      "language": "bash",
+      "code": "b *0x401000\nrun\nx/10i $rip\nx/16gx $rsp\ni r"
+    }
+  ]
+}

@@ -1,0 +1,521 @@
+{
+  "slug": "ghidra-cheatsheet",
+  "title": "Ghidra Cheat Sheet",
+  "subtitle": "Comprehensive Ghidra reference with workflow suggestions for reverse engineering.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Suggested Reverse Engineering Approach",
+      "text": "1. Start broad: identify file type, architecture, imports, strings, and entry points before diving into code.\n\n2. Rename aggressively: functions, variables, structs, enums, and globals become much easier to reason about once named.\n\n3. Work top-down first: find main logic, argument parsing, input handlers, comparison gates, network/file routines, and crypto/decode routines.\n\n4. Use decompiler and disassembly together: trust neither blindly. Cross-check suspicious logic, pointer math, sign extension, bitwise ops, switch tables, and stack variables.\n\n5. Follow data flow, not just control flow: where does input come from, how is it transformed, and where is it validated or used.\n\n6. Create types early when possible: structs, function signatures, arrays, pointers, and enums often unlock better decompilation.\n\n7. Bookmark and comment every important decision point: validation functions, decoding loops, anti-debug logic, import wrappers, vtables, dispatchers, and config loaders.\n\n8. Iterate: first pass identifies landmarks, second pass renames and types, third pass reconstructs behavior."
+    },
+    {
+      "title": "CORE WINDOWS / PANES",
+      "items": [
+        {
+          "key": "Listing",
+          "value": "Disassembly and code bytes view"
+        },
+        {
+          "key": "Decompiler",
+          "value": "C-like pseudocode for current function"
+        },
+        {
+          "key": "Symbol Tree",
+          "value": "Functions, labels, classes, namespaces, imports, exports"
+        },
+        {
+          "key": "Data Type Manager",
+          "value": "Structs, enums, typedefs, pointers, arrays"
+        },
+        {
+          "key": "Function Graph",
+          "value": "Control-flow graph for current function"
+        },
+        {
+          "key": "Defined Strings",
+          "value": "All recognized strings"
+        },
+        {
+          "key": "Program Trees",
+          "value": "Sections / memory layout / fragments"
+        },
+        {
+          "key": "References",
+          "value": "Cross-references to symbol or address"
+        },
+        {
+          "key": "Console",
+          "value": "Script output and tool messages"
+        }
+      ]
+    },
+    {
+      "title": "ESSENTIAL SHORTCUTS",
+      "items": [
+        {
+          "key": "G",
+          "value": "Go to address / symbol"
+        },
+        {
+          "key": "L",
+          "value": "Rename symbol / variable"
+        },
+        {
+          "key": "F",
+          "value": "Create function"
+        },
+        {
+          "key": "D",
+          "value": "Disassemble"
+        },
+        {
+          "key": "C",
+          "value": "Clear code / clear listing items"
+        },
+        {
+          "key": ";",
+          "value": "Add comment"
+        },
+        {
+          "key": "X",
+          "value": "Show references"
+        },
+        {
+          "key": "P",
+          "value": "Edit function signature / parameters"
+        },
+        {
+          "key": "Ctrl+Shift+F",
+          "value": "Search text"
+        },
+        {
+          "key": "Ctrl+L",
+          "value": "Function list"
+        },
+        {
+          "key": "Ctrl+E",
+          "value": "Edit data / patch bytes in some contexts"
+        },
+        {
+          "key": "Ctrl+Shift+E",
+          "value": "Export program"
+        }
+      ]
+    },
+    {
+      "title": "NAVIGATION HABITS",
+      "items": [
+        {
+          "key": "Go to main / entry",
+          "value": "Find program start and top-level logic first"
+        },
+        {
+          "key": "Follow xrefs",
+          "value": "Trace callers and users of strings, globals, imports"
+        },
+        {
+          "key": "Use bookmarks",
+          "value": "Mark validation, crypto, parsing, dispatch, anti-debug"
+        },
+        {
+          "key": "Split windows",
+          "value": "Keep decompiler and listing visible together"
+        },
+        {
+          "key": "Back / forward nav",
+          "value": "Use navigation history when hopping through refs"
+        },
+        {
+          "key": "Search by strings",
+          "value": "Great for finding UI, errors, file paths, commands"
+        }
+      ]
+    },
+    {
+      "title": "RENAME / COMMENT STRATEGY",
+      "items": [
+        {
+          "key": "Rename functions",
+          "value": "Use behavioral names like validate_key, decode_blob, init_config"
+        },
+        {
+          "key": "Rename vars",
+          "value": "Prefer semantic names over temp1/temp2 if behavior is known"
+        },
+        {
+          "key": "Add repeatable comments",
+          "value": "Good for explaining logic reused in many places"
+        },
+        {
+          "key": "Add plate comments",
+          "value": "Useful for summarizing a function at the top"
+        },
+        {
+          "key": "Comment unknowns",
+          "value": "Mark assumptions explicitly instead of forgetting them"
+        },
+        {
+          "key": "Mark stubs/wrappers",
+          "value": "Rename import thunks and wrappers early"
+        }
+      ]
+    },
+    {
+      "title": "FUNCTION ANALYSIS",
+      "items": [
+        {
+          "key": "Edit signature",
+          "value": "Fix parameters, return types, calling convention"
+        },
+        {
+          "key": "No-return functions",
+          "value": "Mark exit/abort/panic-like functions correctly"
+        },
+        {
+          "key": "Inline wrappers",
+          "value": "Recognize trivial wrappers around imports"
+        },
+        {
+          "key": "Thunk functions",
+          "value": "Rename and mentally collapse them quickly"
+        },
+        {
+          "key": "Call trees",
+          "value": "Find who calls who and isolate top-level control flow"
+        },
+        {
+          "key": "Tail calls",
+          "value": "Decompiler may hide them; check listing if weird"
+        }
+      ]
+    },
+    {
+      "title": "DATA TYPES / STRUCTS / ENUMS",
+      "items": [
+        {
+          "key": "Create structs",
+          "value": "For repeated offsets on same pointer base"
+        },
+        {
+          "key": "Use enums",
+          "value": "For flags, error codes, command IDs, state values"
+        },
+        {
+          "key": "Apply pointers",
+          "value": "Decompiler improves when pointer levels are right"
+        },
+        {
+          "key": "Arrays",
+          "value": "Use arrays for tables, S-boxes, command tables, string lists"
+        },
+        {
+          "key": "Function pointers",
+          "value": "Critical for vtables, callbacks, dispatchers"
+        },
+        {
+          "key": "Typedef aliases",
+          "value": "Help readability for handles and custom scalar types"
+        }
+      ]
+    },
+    {
+      "title": "WHEN TO CREATE A STRUCT",
+      "items": [
+        {
+          "key": "Repeated offsets",
+          "value": "Same base register/pointer plus multiple constant offsets"
+        },
+        {
+          "key": "Known layout",
+          "value": "PEB/TEB, file headers, packet headers, object instances"
+        },
+        {
+          "key": "Loops over fields",
+          "value": "A sign data is organized, not ad hoc"
+        },
+        {
+          "key": "Mixed data sizes",
+          "value": "Struct helps decode 1/2/4/8-byte field patterns"
+        },
+        {
+          "key": "Pointer-rich objects",
+          "value": "Good sign of object/class-like data"
+        }
+      ]
+    },
+    {
+      "title": "DECOMPILER PITFALLS",
+      "items": [
+        {
+          "key": "Signed vs unsigned",
+          "value": "Check listing when comparisons look wrong"
+        },
+        {
+          "key": "Bitfields / masks",
+          "value": "Decompiler may hide intent or widen operations oddly"
+        },
+        {
+          "key": "Pointer aliasing",
+          "value": "Decompiler guesses can be misleading"
+        },
+        {
+          "key": "Switch tables",
+          "value": "Verify jump table targets in listing/graph"
+        },
+        {
+          "key": "Stack vars",
+          "value": "Bad frame recovery can create fake locals"
+        },
+        {
+          "key": "Optimized code",
+          "value": "Compiler transforms may make pseudocode awkward"
+        },
+        {
+          "key": "Inlined logic",
+          "value": "Decompiler can blur boundaries of original functions"
+        }
+      ]
+    },
+    {
+      "title": "STRING HUNTING",
+      "items": [
+        {
+          "key": "Defined Strings window",
+          "value": "Search UI messages, filenames, registry keys, commands"
+        },
+        {
+          "key": "Cross-reference strings",
+          "value": "Jump straight to functionality using them"
+        },
+        {
+          "key": "Wide strings",
+          "value": "Check UTF-16 or Unicode strings too"
+        },
+        {
+          "key": "Constructed strings",
+          "value": "Look for byte arrays, stack strings, XOR decode loops"
+        },
+        {
+          "key": "Format strings",
+          "value": "Can reveal logging, command syntax, protocol structures"
+        }
+      ]
+    },
+    {
+      "title": "IMPORT / EXPORT ANALYSIS",
+      "items": [
+        {
+          "key": "Imports",
+          "value": "Fastest clue source for capabilities"
+        },
+        {
+          "key": "File APIs",
+          "value": "Find config, persistence, logs, file format handlers"
+        },
+        {
+          "key": "Network APIs",
+          "value": "Find sockets, HTTP, DNS, RPC, named pipes"
+        },
+        {
+          "key": "Crypto APIs",
+          "value": "Find encryption, hashing, randomness"
+        },
+        {
+          "key": "Process/thread APIs",
+          "value": "Find injection, execution, anti-debug, services"
+        },
+        {
+          "key": "Exports",
+          "value": "Useful for DLL role and externally reachable functions"
+        }
+      ]
+    },
+    {
+      "title": "SEARCH METHODS",
+      "items": [
+        {
+          "key": "Search text",
+          "value": "Names, strings, symbols, labels"
+        },
+        {
+          "key": "Search bytes",
+          "value": "Magic constants, signatures, opcodes, hash seeds"
+        },
+        {
+          "key": "Search mnemonics",
+          "value": "Find xor/rol/ror/cmp/test-heavy logic"
+        },
+        {
+          "key": "Search scalars",
+          "value": "Find constants such as 0x1000, 0x5A4D, ports, flags"
+        },
+        {
+          "key": "Search for references",
+          "value": "Trace globals, vtables, dispatch tables, jump targets"
+        }
+      ]
+    },
+    {
+      "title": "PATCHING / EDITING",
+      "items": [
+        {
+          "key": "Patch instruction",
+          "value": "Assemble replacement opcodes where supported"
+        },
+        {
+          "key": "Patch bytes",
+          "value": "Edit raw bytes directly"
+        },
+        {
+          "key": "NOP out checks",
+          "value": "Useful for bypassing validations in labs"
+        },
+        {
+          "key": "Flip conditional jumps",
+          "value": "JE <-> JNE style patching"
+        },
+        {
+          "key": "Re-export",
+          "value": "Save modified binary carefully and test separately"
+        },
+        {
+          "key": "Document patches",
+          "value": "Always comment what changed and why"
+        }
+      ]
+    },
+    {
+      "title": "FUNCTION GRAPH USAGE",
+      "items": [
+        {
+          "key": "Basic blocks",
+          "value": "Understand flow at branch granularity"
+        },
+        {
+          "key": "Loop recognition",
+          "value": "Great for spotting decode / transform loops"
+        },
+        {
+          "key": "Switch recovery",
+          "value": "Graph often clarifies multi-branch dispatch"
+        },
+        {
+          "key": "Dominant blocks",
+          "value": "Find shared checks / common exits / error handling"
+        },
+        {
+          "key": "Use with decompiler",
+          "value": "Graph for structure, decompiler for semantics"
+        }
+      ]
+    },
+    {
+      "title": "SCRIPTING / AUTOMATION IDEAS",
+      "items": [
+        {
+          "key": "Rename wrappers",
+          "value": "Auto-rename import thunks or repeated patterns"
+        },
+        {
+          "key": "Enumerate strings",
+          "value": "Dump strings and xrefs"
+        },
+        {
+          "key": "Find API usage",
+          "value": "Script import callsite inventory"
+        },
+        {
+          "key": "Constant search",
+          "value": "Locate crypto constants or magic numbers"
+        },
+        {
+          "key": "Bulk comments",
+          "value": "Annotate known function groups"
+        },
+        {
+          "key": "Type application",
+          "value": "Apply signatures or structs repeatedly"
+        }
+      ]
+    },
+    {
+      "title": "CLASS / VTABLE CLUES",
+      "items": [
+        {
+          "key": "Pointer to function table",
+          "value": "Strong sign of vtable/object model"
+        },
+        {
+          "key": "First argument reused",
+          "value": "Likely this/self pointer"
+        },
+        {
+          "key": "Repeated offset access",
+          "value": "Object fields / struct members"
+        },
+        {
+          "key": "Constructor-like init",
+          "value": "Zeroing fields, setting function table pointers"
+        },
+        {
+          "key": "Indirect calls",
+          "value": "Possible virtual dispatch"
+        }
+      ]
+    },
+    {
+      "title": "MALWARE / CRACKME TRIAGE HABITS",
+      "items": [
+        {
+          "key": "Strings first",
+          "value": "Find commands, messages, paths, URLs, mutexes"
+        },
+        {
+          "key": "Imports second",
+          "value": "Infer capability quickly"
+        },
+        {
+          "key": "Entry + main logic",
+          "value": "Locate unpacking/initialization"
+        },
+        {
+          "key": "Validation gates",
+          "value": "cmp/test + branch patterns"
+        },
+        {
+          "key": "Decode loops",
+          "value": "xor/add/rol/ror-based transformations"
+        },
+        {
+          "key": "Persistence / networking",
+          "value": "Look for file, registry, service, socket usage"
+        }
+      ]
+    },
+    {
+      "title": "SUGGESTED WORKFLOW BY PASS",
+      "items": [
+        {
+          "key": "Pass 1",
+          "value": "Imports, strings, entry, function list, obvious landmarks"
+        },
+        {
+          "key": "Pass 2",
+          "value": "Rename key functions and globals"
+        },
+        {
+          "key": "Pass 3",
+          "value": "Recover data types, structs, signatures"
+        },
+        {
+          "key": "Pass 4",
+          "value": "Trace data flow from inputs to checks/effects"
+        },
+        {
+          "key": "Pass 5",
+          "value": "Patch, script, or reproduce logic externally if needed"
+        }
+      ]
+    }
+  ]
+}
