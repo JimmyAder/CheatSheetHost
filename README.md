@@ -190,5 +190,4 @@ This project is open source. Feel free to use, modify, and distribute.
 
 - For questions or issues, open a GitHub issue
 - Contributions welcome via pull requests
-- Star the repo if you find it useful!</br></content>
-<parameter name="filePath">/home/xen/Desktop/CheatSheetHost/README.md
+- Star the repo if you find it useful!</content>
