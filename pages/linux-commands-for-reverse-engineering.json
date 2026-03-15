@@ -1,0 +1,505 @@
+{
+  "slug": "linux-commands-for-reverse-engineering",
+  "title": "Helpful Linux Commands for Reverse Engineering",
+  "subtitle": "Common Linux command-line tools that are available on many systems and are useful for triage, binary inspection, debugging, tracing, and file analysis.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Scope",
+      "text": "This sheet focuses on commands that are commonly available on many Linux installations or are very commonly installed in RE, CTF, and systems environments. The goal is fast triage and practical workflow support: identify files, inspect strings, search bytes, trace behavior, compare outputs, and understand what a binary is doing."
+    },
+    {
+      "type": "table",
+      "title": "FAST TRIAGE COMMANDS",
+      "items": [
+        {
+          "key": "file target",
+          "value": "Identify file type, architecture, endianness, stripping, etc."
+        },
+        {
+          "key": "ls -l",
+          "value": "Quick file size, perms, timestamps"
+        },
+        {
+          "key": "stat target",
+          "value": "Detailed metadata"
+        },
+        {
+          "key": "sha256sum target",
+          "value": "Fingerprint sample or verify integrity"
+        },
+        {
+          "key": "md5sum target",
+          "value": "Legacy quick hash reference"
+        },
+        {
+          "key": "wc -c target",
+          "value": "Byte size"
+        },
+        {
+          "key": "uname -a",
+          "value": "Host/kernel info for environment context"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRING / TEXT DISCOVERY",
+      "items": [
+        {
+          "key": "strings target",
+          "value": "Extract printable strings"
+        },
+        {
+          "key": "strings -a target",
+          "value": "Scan whole file, not just loaded sections"
+        },
+        {
+          "key": "strings -n 4 target",
+          "value": "Minimum string length 4"
+        },
+        {
+          "key": "strings target | grep key",
+          "value": "Search strings for keywords"
+        },
+        {
+          "key": "grep -R pattern dir/",
+          "value": "Recursive text search"
+        },
+        {
+          "key": "grep -a pattern target",
+          "value": "Treat binary as text for rough searching"
+        },
+        {
+          "key": "grep -oba 'MZ' target",
+          "value": "Find byte/text pattern offsets"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "HEX / BINARY VIEWING",
+      "items": [
+        {
+          "key": "xxd target | less",
+          "value": "Hex dump with ASCII"
+        },
+        {
+          "key": "xxd -g 1 target",
+          "value": "Group by single bytes"
+        },
+        {
+          "key": "xxd -s 0x100 -l 0x80 target",
+          "value": "Dump region at offset"
+        },
+        {
+          "key": "hexdump -C target",
+          "value": "Classic canonical hex+ASCII dump"
+        },
+        {
+          "key": "od -Ax -tx1z target",
+          "value": "Hex/ASCII dump alternative"
+        },
+        {
+          "key": "cmp a b",
+          "value": "Compare two files byte-by-byte"
+        },
+        {
+          "key": "diff -u a b",
+          "value": "Text diff, useful for decoded outputs"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ELF / BINARY INSPECTION",
+      "items": [
+        {
+          "key": "readelf -h target",
+          "value": "ELF header"
+        },
+        {
+          "key": "readelf -S target",
+          "value": "ELF sections"
+        },
+        {
+          "key": "readelf -l target",
+          "value": "Program headers / segments"
+        },
+        {
+          "key": "readelf -s target",
+          "value": "Symbol table"
+        },
+        {
+          "key": "readelf -r target",
+          "value": "Relocations"
+        },
+        {
+          "key": "objdump -d target",
+          "value": "Disassemble"
+        },
+        {
+          "key": "objdump -Mintel -d target",
+          "value": "Disassemble in Intel syntax"
+        },
+        {
+          "key": "objdump -x target",
+          "value": "Headers, symbols, and more"
+        },
+        {
+          "key": "nm -C target",
+          "value": "List symbols, demangle C++ names"
+        },
+        {
+          "key": "ldd target",
+          "value": "Show dynamic library dependencies"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PROCESS / RUNTIME OBSERVATION",
+      "items": [
+        {
+          "key": "ps aux",
+          "value": "List processes"
+        },
+        {
+          "key": "ps -ef | grep name",
+          "value": "Find target process"
+        },
+        {
+          "key": "pgrep name",
+          "value": "Find PID by name"
+        },
+        {
+          "key": "pidof name",
+          "value": "PID lookup"
+        },
+        {
+          "key": "lsof -p PID",
+          "value": "Open files, sockets, libraries for process"
+        },
+        {
+          "key": "cat /proc/PID/maps",
+          "value": "Memory mappings"
+        },
+        {
+          "key": "cat /proc/PID/cmdline",
+          "value": "Process arguments"
+        },
+        {
+          "key": "cat /proc/PID/environ | tr '\\0' '\\n'",
+          "value": "Environment variables"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "TRACING / OBSERVABILITY",
+      "items": [
+        {
+          "key": "strace ./target",
+          "value": "Trace syscalls"
+        },
+        {
+          "key": "strace -f ./target",
+          "value": "Trace child processes too"
+        },
+        {
+          "key": "strace -o trace.txt ./target",
+          "value": "Write syscall trace to file"
+        },
+        {
+          "key": "strace -e openat,read,write ./target",
+          "value": "Trace selected syscalls"
+        },
+        {
+          "key": "ltrace ./target",
+          "value": "Trace library calls (if installed)"
+        },
+        {
+          "key": "time ./target",
+          "value": "Measure runtime quickly"
+        },
+        {
+          "key": "timeout 5 ./target",
+          "value": "Kill long-running target after 5 sec"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "DEBUGGING BASICS",
+      "items": [
+        {
+          "key": "gdb ./target",
+          "value": "Open in GDB"
+        },
+        {
+          "key": "gdb -q ./target",
+          "value": "Quiet startup"
+        },
+        {
+          "key": "gdb -p PID",
+          "value": "Attach to running process"
+        },
+        {
+          "key": "ulimit -c unlimited",
+          "value": "Enable core dumps"
+        },
+        {
+          "key": "coredumpctl list",
+          "value": "List collected crashes on systemd systems"
+        },
+        {
+          "key": "coredumpctl gdb PID",
+          "value": "Open crash directly in GDB"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SEARCHING FILES / DATA",
+      "items": [
+        {
+          "key": "find . -type f -name '*.so*'",
+          "value": "Find shared objects"
+        },
+        {
+          "key": "find . -type f | xargs strings | grep key",
+          "value": "Search many files for strings"
+        },
+        {
+          "key": "grep -RIn pattern dir/",
+          "value": "Recursive search with line numbers"
+        },
+        {
+          "key": "locate filename",
+          "value": "Fast filename lookup if database exists"
+        },
+        {
+          "key": "which cmd",
+          "value": "Locate executable in PATH"
+        },
+        {
+          "key": "whereis cmd",
+          "value": "Find binary/source/man locations"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ARCHIVES / PACKERS / DATA HANDLING",
+      "items": [
+        {
+          "key": "tar -tf archive.tar",
+          "value": "List tar contents"
+        },
+        {
+          "key": "unzip -l file.zip",
+          "value": "List zip contents"
+        },
+        {
+          "key": "gzip -d file.gz",
+          "value": "Decompress gzip"
+        },
+        {
+          "key": "base64 -d file.b64",
+          "value": "Decode Base64 from file"
+        },
+        {
+          "key": "base64 file.bin",
+          "value": "Encode to Base64"
+        },
+        {
+          "key": "tr -d '\\n' < file",
+          "value": "Flatten lines, useful for encoded blobs"
+        },
+        {
+          "key": "cut / paste / sort / uniq",
+          "value": "Useful for logs, token lists, strings"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PATCHING / BYTE EDITING HELPERS",
+      "items": [
+        {
+          "key": "printf '\\x90\\x90' | dd of=target bs=1 seek=OFFSET conv=notrunc",
+          "value": "Patch bytes at offset"
+        },
+        {
+          "key": "cp target target.bak",
+          "value": "Make backup before patching"
+        },
+        {
+          "key": "truncate -s SIZE file",
+          "value": "Resize file"
+        },
+        {
+          "key": "dd if=target of=chunk.bin bs=1 skip=OFF count=LEN",
+          "value": "Extract region from file"
+        },
+        {
+          "key": "cat a.bin b.bin > out.bin",
+          "value": "Concatenate blobs"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "NETWORK / IPC OBSERVATION",
+      "items": [
+        {
+          "key": "ss -tulpn",
+          "value": "Sockets and listening services"
+        },
+        {
+          "key": "netstat -tulpn",
+          "value": "Older alternative if installed"
+        },
+        {
+          "key": "nc -lvnp 4444",
+          "value": "Listen with netcat"
+        },
+        {
+          "key": "nc host port",
+          "value": "Connect with netcat"
+        },
+        {
+          "key": "curl URL",
+          "value": "Quick HTTP interaction"
+        },
+        {
+          "key": "wget URL",
+          "value": "Download or probe web resource"
+        },
+        {
+          "key": "tcpdump -i any",
+          "value": "Packet capture if available and permitted"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ENVIRONMENT / LOADER TRICKS",
+      "items": [
+        {
+          "key": "env",
+          "value": "Show environment variables"
+        },
+        {
+          "key": "env VAR=1 ./target",
+          "value": "Run with modified env"
+        },
+        {
+          "key": "LD_PRELOAD=./hook.so ./target",
+          "value": "Inject preload library"
+        },
+        {
+          "key": "LD_LIBRARY_PATH=dir ./target",
+          "value": "Override library search path"
+        },
+        {
+          "key": "setarch $(uname -m) -R ./target",
+          "value": "Disable ASLR for child on some systems"
+        },
+        {
+          "key": "getconf LONG_BIT",
+          "value": "Check userland bitness quickly"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PERMISSIONS / EXECUTION",
+      "items": [
+        {
+          "key": "chmod +x target",
+          "value": "Make file executable"
+        },
+        {
+          "key": "./target",
+          "value": "Run executable in current dir"
+        },
+        {
+          "key": "sudo -l",
+          "value": "Check permitted sudo commands"
+        },
+        {
+          "key": "id",
+          "value": "Current user/group context"
+        },
+        {
+          "key": "whoami",
+          "value": "Current username"
+        },
+        {
+          "key": "getcap -r / 2>/dev/null",
+          "value": "Find file capabilities if installed"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "VERY COMMON WORKFLOW COMBINATIONS",
+      "items": [
+        {
+          "key": "file + strings + readelf",
+          "value": "Fast ELF triage trio"
+        },
+        {
+          "key": "strings | grep",
+          "value": "Find commands, messages, file paths, URLs"
+        },
+        {
+          "key": "objdump + less",
+          "value": "Quick static disassembly pass"
+        },
+        {
+          "key": "strace -o",
+          "value": "See file/network/process behavior"
+        },
+        {
+          "key": "xxd + grep",
+          "value": "Inspect binary data and locate patterns"
+        },
+        {
+          "key": "sha256sum before/after",
+          "value": "Verify patching or output changes"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "title": "Suggested Triage Order",
+      "text": "A strong minimal triage flow on Linux is:\n\n1. file target\n2. sha256sum target\n3. strings -a target | less\n4. readelf -h/-S/-s target\n5. objdump -Mintel -d target | less\n6. ldd target\n7. strace -f ./target\n\nThat sequence usually tells you what the binary is, what it depends on, what text clues it contains, and what it does at runtime."
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: FAST ELF TRIAGE",
+      "language": "bash",
+      "code": "file ./target\nsha256sum ./target\nstrings -a ./target | less\nreadelf -h ./target\nreadelf -S ./target\nreadelf -s ./target | less\nldd ./target"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: RUNTIME OBSERVATION",
+      "language": "bash",
+      "code": "strace -f -o trace.txt ./target arg1 arg2\ngrep -E 'open|read|write|connect|execve' trace.txt\ncat /proc/$(pgrep target)/maps"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: PATCH A FEW BYTES",
+      "language": "bash",
+      "code": "cp target target.bak\nprintf '\\x90\\x90' | dd of=target bs=1 seek=$((0x1234)) conv=notrunc"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: EXTRACT A REGION",
+      "language": "bash",
+      "code": "dd if=target of=chunk.bin bs=1 skip=$((0x400)) count=$((0x100))"
+    }
+  ]
+}

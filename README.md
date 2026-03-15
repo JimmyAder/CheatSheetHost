@@ -149,6 +149,7 @@ CheatSheetHost/
 - **GDB/x64dbg**: Debugging commands and workflows
 - **Ghidra**: Reverse engineering tool shortcuts
 - **Helpful Links & Study References**: Reverse Engineering, CTFs, Crypto, Binary Internals, and Practice Platforms
+- **Helpful Linux Commands for Reverse Engineering**: Common Linux command-line tools for triage, binary inspection, debugging, and file analysis
 - **IDA Pro**: Disassembler hotkeys and features
 - **Neovim**: Editor commands and configuration
 - **Python for Reverse Engineering**: Practical Python reference for parsing, decoding, and rebuilding algorithms
