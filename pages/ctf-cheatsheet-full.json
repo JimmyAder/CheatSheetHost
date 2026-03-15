@@ -533,6 +533,19 @@
           "value": "retest"
         }
       ]
+    },
+        {
+      "title": "Useful Terminal Commands",
+      "items": [
+        {
+          "key": "encode",
+          "value": "echo 'Secret' | base64"
+        },
+        {
+          "key": "decode",
+          "value": "echo 'U2VjcmV0Cg==' | base64 -d"
+        }
+      ]
     }
   ],
   "ascii": {
