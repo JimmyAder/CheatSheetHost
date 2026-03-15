@@ -145,6 +145,7 @@ CheatSheetHost/
 
 - **CTF Master Sheet**: Registers, syscalls, and common techniques
 - **Bitwise / Crypto Pattern Recognition**: Reference for spotting bitwise operations, encoders, hashes, and crypto patterns
+- **C / C++ for Reverse Engineering**: Practical C and C++ reference for reading decompiler output and reconstructing logic
 - **GDB/x64dbg**: Debugging commands and workflows
 - **Ghidra**: Reverse engineering tool shortcuts
 - **Helpful Links & Study References**: Reverse Engineering, CTFs, Crypto, Binary Internals, and Practice Platforms
