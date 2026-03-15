@@ -138,10 +138,12 @@ CheatSheetHost/
 ## Included Cheatsheets
 
 - **CTF Master Sheet**: Registers, syscalls, and common techniques
+- **Bitwise / Crypto Pattern Recognition**: Reference for spotting bitwise operations, encoders, hashes, and crypto patterns
 - **GDB/x64dbg**: Debugging commands and workflows
 - **Ghidra**: Reverse engineering tool shortcuts
 - **IDA Pro**: Disassembler hotkeys and features
 - **Neovim**: Editor commands and configuration
+- **Python for Reverse Engineering**: Practical Python reference for parsing, decoding, and rebuilding algorithms
 - **WinDbg**: Windows debugging commands
 - **x64 Assembly**: Instruction reference
 - **x64 Shellcode Syscalls**: System call numbers
