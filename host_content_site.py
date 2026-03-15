@@ -127,7 +127,7 @@ def render_sections(page: dict[str, Any]) -> str:
                 """
             )
             continue
-        
+
         # Optional fallback for unsupported section types
         out.append(
             f"""
@@ -236,7 +236,7 @@ def render_page(page: dict[str, Any], pages: dict[str, dict[str, Any]], template
         template
         .replace("{{PAGE_TITLE}}", title)
         .replace("{{PAGE_SUBTITLE}}", subtitle)
-        .replace("{{TOP_BAR}}", f"Responsive LAN Content Site // {title}")
+        .replace("{{TOP_BAR}}", f"LAN Content Site // {title}")
         .replace("{{NAV_LINKS}}", render_nav(pages, current_slug=page["slug"]))
         .replace("{{SECTIONS_HTML}}", sections_html)
         .replace("{{ASCII_HTML}}", ascii_html)

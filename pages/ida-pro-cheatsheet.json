@@ -1,0 +1,508 @@
+{
+  "slug": "ida-pro-cheatsheet",
+  "title": "IDA Pro Cheat Sheet",
+  "subtitle": "Comprehensive IDA Pro reference for reverse engineering, navigation, renaming, analysis, and workflow.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Suggested Reverse Engineering Approach",
+      "text": "1. Start broad: inspect strings, imports, exports, entry point, sections, and obvious capabilities before reading functions line by line.\n\n2. Rename aggressively: functions, globals, stack vars, structures, enums, and offsets become much easier to reason about once named.\n\n3. Work top-down first: identify main logic, argument parsing, config loading, validation gates, dispatchers, crypto/encoding loops, network/file handlers, and anti-debug checks.\n\n4. Use graph view, linear disassembly, and pseudocode together: each reveals different things. Verify decompiler output when pointer math, sign extension, switch recovery, or optimized compiler patterns look suspicious.\n\n5. Follow data flow, not just control flow: where input comes from, how it is transformed, and where it is validated or acted on.\n\n6. Build types early when possible: structs, enums, arrays, function pointers, and corrected prototypes often dramatically improve readability.\n\n7. Comment and bookmark every important landmark: compare/jump gates, unpacking routines, decryption loops, import wrappers, error handlers, allocators, and protocol parsers.\n\n8. Iterate in passes: first locate landmarks, then rename, then fix types, then reconstruct behavior."
+    },
+    {
+      "type": "table",
+      "title": "CORE VIEWS / WINDOWS",
+      "items": [
+        {
+          "key": "IDA View-A",
+          "value": "Main disassembly view"
+        },
+        {
+          "key": "Pseudocode",
+          "value": "Decompiler output (Hex-Rays if available)"
+        },
+        {
+          "key": "Functions window",
+          "value": "List of recognized functions"
+        },
+        {
+          "key": "Names window",
+          "value": "Named symbols / labels / globals"
+        },
+        {
+          "key": "Strings window",
+          "value": "Recognized strings"
+        },
+        {
+          "key": "Imports window",
+          "value": "Imported APIs and libraries"
+        },
+        {
+          "key": "Exports window",
+          "value": "Exported symbols"
+        },
+        {
+          "key": "Segments window",
+          "value": "Sections / memory segments"
+        },
+        {
+          "key": "Hex View",
+          "value": "Raw bytes"
+        },
+        {
+          "key": "Structures / Enums",
+          "value": "User-defined types"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ESSENTIAL SHORTCUTS",
+      "items": [
+        {
+          "key": "G",
+          "value": "Jump to address / name"
+        },
+        {
+          "key": "N",
+          "value": "Rename"
+        },
+        {
+          "key": "X",
+          "value": "Show xrefs to current item"
+        },
+        {
+          "key": "Enter",
+          "value": "Follow jump / call / xref"
+        },
+        {
+          "key": "Esc",
+          "value": "Return to previous location"
+        },
+        {
+          "key": "Space",
+          "value": "Toggle graph/text view"
+        },
+        {
+          "key": ";",
+          "value": "Add repeatable comment"
+        },
+        {
+          "key": ":",
+          "value": "Add regular comment"
+        },
+        {
+          "key": "U",
+          "value": "Undefine item"
+        },
+        {
+          "key": "C",
+          "value": "Make code"
+        },
+        {
+          "key": "D",
+          "value": "Make data"
+        },
+        {
+          "key": "A",
+          "value": "Make ASCII string"
+        },
+        {
+          "key": "P",
+          "value": "Create function"
+        },
+        {
+          "key": "Y",
+          "value": "Set type"
+        },
+        {
+          "key": "T",
+          "value": "Apply struct offset / use type contextually"
+        },
+        {
+          "key": "Ctrl+X",
+          "value": "Open xrefs window in some contexts"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "NAVIGATION HABITS",
+      "items": [
+        {
+          "key": "Jump to entry",
+          "value": "Start with entry point / start / WinMain / main"
+        },
+        {
+          "key": "Follow strings",
+          "value": "Messages, file paths, commands, URLs, format strings"
+        },
+        {
+          "key": "Follow imports",
+          "value": "Infer capabilities quickly from APIs"
+        },
+        {
+          "key": "Use xrefs constantly",
+          "value": "Trace callers, callees, globals, strings, tables"
+        },
+        {
+          "key": "Switch graph/text views",
+          "value": "Graph for structure, text for exact control flow"
+        },
+        {
+          "key": "Track history",
+          "value": "Use backtracking when bouncing between refs"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "RENAME / COMMENT STRATEGY",
+      "items": [
+        {
+          "key": "Rename functions",
+          "value": "Use semantic names like decrypt_blob, parse_cfg, validate_key"
+        },
+        {
+          "key": "Rename globals",
+          "value": "Config flags, handles, counters, state variables"
+        },
+        {
+          "key": "Rename stack vars",
+          "value": "Buffers, lengths, keys, context pointers"
+        },
+        {
+          "key": "Function comments",
+          "value": "Summarize purpose, inputs, outputs, side effects"
+        },
+        {
+          "key": "Inline comments",
+          "value": "Use for branch meaning, constants, assumptions"
+        },
+        {
+          "key": "Mark unknowns",
+          "value": "Comment what you suspect instead of forgetting later"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "FUNCTION ANALYSIS",
+      "items": [
+        {
+          "key": "Create function",
+          "value": "Define missing code regions"
+        },
+        {
+          "key": "Edit prototype",
+          "value": "Fix params, return type, calling convention"
+        },
+        {
+          "key": "No-return funcs",
+          "value": "Mark exit/abort/panic-like calls properly"
+        },
+        {
+          "key": "Thunk wrappers",
+          "value": "Rename tiny wrappers around imports"
+        },
+        {
+          "key": "Caller/callee exploration",
+          "value": "Map top-down logic and hot paths"
+        },
+        {
+          "key": "Tail calls",
+          "value": "Decompiler may obscure them; verify in disasm"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "DATA TYPES / STRUCTS / ENUMS",
+      "items": [
+        {
+          "key": "Structs",
+          "value": "Use for repeated offsets off the same base pointer"
+        },
+        {
+          "key": "Enums",
+          "value": "Flags, states, error codes, command IDs"
+        },
+        {
+          "key": "Arrays",
+          "value": "Tables, S-boxes, dispatch arrays, string lists"
+        },
+        {
+          "key": "Pointers",
+          "value": "Correct pointer depth helps decompiler a lot"
+        },
+        {
+          "key": "Function pointers",
+          "value": "Callbacks, vtables, dispatchers"
+        },
+        {
+          "key": "Typedefs",
+          "value": "Alias noisy primitive types to meaningful names"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "WHEN TO CREATE A STRUCT",
+      "items": [
+        {
+          "key": "Repeated offsets",
+          "value": "Same register + many fixed offsets"
+        },
+        {
+          "key": "Known layouts",
+          "value": "Headers, packets, PEB/TEB, object instances"
+        },
+        {
+          "key": "Mixed widths",
+          "value": "1/2/4/8-byte fields with stable ordering"
+        },
+        {
+          "key": "Pointer clusters",
+          "value": "Object- or context-like memory"
+        },
+        {
+          "key": "Looped field access",
+          "value": "Parser or serializer over field layout"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "DECOMPILER PITFALLS",
+      "items": [
+        {
+          "key": "Signed vs unsigned",
+          "value": "Verify comparisons and extensions in disassembly"
+        },
+        {
+          "key": "Bit masks / rotates",
+          "value": "Decompiler can obscure low-level intent"
+        },
+        {
+          "key": "Pointer aliasing",
+          "value": "Type guesses can become misleading"
+        },
+        {
+          "key": "Switch recovery",
+          "value": "Confirm jump table targets manually if odd"
+        },
+        {
+          "key": "Stack vars",
+          "value": "Frame recovery can create weird pseudo-locals"
+        },
+        {
+          "key": "Optimized code",
+          "value": "Compiler transforms may distort original structure"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRING / IMPORT / EXPORT TRIAGE",
+      "items": [
+        {
+          "key": "Strings first",
+          "value": "Find errors, protocol names, paths, commands, UI"
+        },
+        {
+          "key": "Imports next",
+          "value": "File, network, crypto, process, registry, GUI, service APIs"
+        },
+        {
+          "key": "Exports",
+          "value": "Useful for DLL role and externally reachable routines"
+        },
+        {
+          "key": "Format strings",
+          "value": "Often reveal control flow or expected inputs"
+        },
+        {
+          "key": "Decoded strings",
+          "value": "Look for XOR/add/ROL decode loops and stack strings"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SEARCH METHODS",
+      "items": [
+        {
+          "key": "Search text",
+          "value": "Names, strings, labels, comments"
+        },
+        {
+          "key": "Search bytes",
+          "value": "Magic constants, file signatures, opcode patterns"
+        },
+        {
+          "key": "Search immediates",
+          "value": "Ports, flags, lengths, constants"
+        },
+        {
+          "key": "Search xrefs",
+          "value": "Trace use of strings, imports, globals, vtables"
+        },
+        {
+          "key": "Search mnemonics",
+          "value": "Find xor/rol/ror/cmp/test-heavy regions"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PATCHING / EDITING",
+      "items": [
+        {
+          "key": "Patch bytes",
+          "value": "Edit raw opcodes directly"
+        },
+        {
+          "key": "NOP checks",
+          "value": "Common lab tactic for bypassing branches"
+        },
+        {
+          "key": "Flip branch",
+          "value": "JE <-> JNE style patch"
+        },
+        {
+          "key": "Re-analyze after patch",
+          "value": "Keep disassembly and xrefs sane"
+        },
+        {
+          "key": "Document patches",
+          "value": "Comment what changed and why"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "GRAPH VIEW USAGE",
+      "items": [
+        {
+          "key": "Basic blocks",
+          "value": "See structure at branch granularity"
+        },
+        {
+          "key": "Loop identification",
+          "value": "Great for decode/hash/transform loops"
+        },
+        {
+          "key": "Dominators",
+          "value": "Find common checks / exits / handlers"
+        },
+        {
+          "key": "Switch logic",
+          "value": "Clarifies dispatch better than linear view sometimes"
+        },
+        {
+          "key": "Use with pseudocode",
+          "value": "Graph for structure, pseudocode for semantics"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CLASS / VTABLE CLUES",
+      "items": [
+        {
+          "key": "Indirect calls",
+          "value": "Potential virtual dispatch"
+        },
+        {
+          "key": "Function pointer tables",
+          "value": "Likely vtables / callbacks / dispatch arrays"
+        },
+        {
+          "key": "Consistent first arg",
+          "value": "Possible this/self pointer"
+        },
+        {
+          "key": "Repeated member offsets",
+          "value": "Struct/class fields"
+        },
+        {
+          "key": "Constructor-like init",
+          "value": "Zero fields, set table pointer, assign defaults"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "SUGGESTED MULTI-PASS WORKFLOW",
+      "items": [
+        {
+          "key": "Pass 1",
+          "value": "Imports, strings, entry points, sections, landmarks"
+        },
+        {
+          "key": "Pass 2",
+          "value": "Rename key functions, globals, and obvious wrappers"
+        },
+        {
+          "key": "Pass 3",
+          "value": "Recover signatures, structs, enums, arrays"
+        },
+        {
+          "key": "Pass 4",
+          "value": "Trace data flow from input to validation/effects"
+        },
+        {
+          "key": "Pass 5",
+          "value": "Patch, emulate, or recreate logic externally"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON RE TARGETS TO FIND EARLY",
+      "items": [
+        {
+          "key": "Input handlers",
+          "value": "argv, stdin, files, GUI fields, sockets"
+        },
+        {
+          "key": "Validation gates",
+          "value": "cmp/test + conditional branches"
+        },
+        {
+          "key": "Decode loops",
+          "value": "xor/add/sub/rol/ror transforms"
+        },
+        {
+          "key": "Config loaders",
+          "value": "File/registry/env parsing"
+        },
+        {
+          "key": "Dispatchers",
+          "value": "Switches, jump tables, function ptr calls"
+        },
+        {
+          "key": "Anti-debug",
+          "value": "Debugger checks, timing, exception tricks"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "APPROACH EXAMPLE: VALIDATION HUNT",
+      "language": "text",
+      "code": "1. Search strings for success/failure messages.\n2. Follow xrefs to those strings.\n3. Find compare + branch logic feeding them.\n4. Rename functions and variables along that path.\n5. Verify decompiler output against disassembly.\n6. Recreate transforms in Python if needed."
+    },
+    {
+      "type": "code",
+      "title": "APPROACH EXAMPLE: CONFIG / FILE FORMAT",
+      "language": "text",
+      "code": "1. Identify file APIs / parsing entry points.\n2. Trace buffers and offsets.\n3. Create structs for repeated field offsets.\n4. Name magic constants, lengths, IDs, flags.\n5. Recover parser stages and output structures."
+    },
+    {
+      "type": "code",
+      "title": "APPROACH EXAMPLE: DECODE LOOP",
+      "language": "text",
+      "code": "1. Search for xor/rol/ror/add/sub-heavy loops.\n2. Identify source, key, destination, and bounds.\n3. Rename loop vars semantically.\n4. Reproduce logic in Python if easier to reason about.\n5. Comment constants and expected outputs."
+    }
+  ]
+}
