@@ -35,6 +35,12 @@ A lightweight, content-driven web server for hosting interactive cheatsheets and
 
 The server will automatically create default files if they don't exist.
 
+## Links
+
+- **Repository**: [GitHub](https://github.com/yourusername/CheatSheetHost)
+- **Issues**: [Report Bugs](https://github.com/yourusername/CheatSheetHost/issues)
+- **Discussions**: [Q&A](https://github.com/yourusername/CheatSheetHost/discussions)
+
 ## Usage
 
 ### Accessing the Site
@@ -141,6 +147,7 @@ CheatSheetHost/
 - **Bitwise / Crypto Pattern Recognition**: Reference for spotting bitwise operations, encoders, hashes, and crypto patterns
 - **GDB/x64dbg**: Debugging commands and workflows
 - **Ghidra**: Reverse engineering tool shortcuts
+- **Helpful Links & Study References**: Reverse Engineering, CTFs, Crypto, Binary Internals, and Practice Platforms
 - **IDA Pro**: Disassembler hotkeys and features
 - **Neovim**: Editor commands and configuration
 - **Python for Reverse Engineering**: Practical Python reference for parsing, decoding, and rebuilding algorithms
@@ -190,6 +197,6 @@ This project is open source. Feel free to use, modify, and distribute.
 
 ## Support
 
-- For questions or issues, open a GitHub issue
+- For questions or issues, [open a GitHub issue](https://github.com/yourusername/CheatSheetHost/issues)
 - Contributions welcome via pull requests
 - Star the repo if you find it useful!</content>
