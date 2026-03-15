@@ -288,6 +288,130 @@
       ]
     },
     {
+      "title": "COMMON BREAKPOINT TARGETS",
+      "items": [
+        {
+          "key": "strlen",
+          "value": "Watch string pointer to see what data is being measured"
+        },
+        {
+          "key": "strcmp",
+          "value": "Classic crackme breakpoint; often compares user input to expected string"
+        },
+        {
+          "key": "strncmp",
+          "value": "Like strcmp but length-limited; useful for partial checks"
+        },
+        {
+          "key": "memcmp",
+          "value": "Common byte-array comparison gate; great for raw key/data checks"
+        },
+        {
+          "key": "strcpy/strncpy",
+          "value": "See where strings are copied, staged, or normalized"
+        },
+        {
+          "key": "memcpy",
+          "value": "Catch decoded buffers or transformed data being copied"
+        },
+        {
+          "key": "puts/printf",
+          "value": "Useful for locating success/failure messages and nearby validation logic"
+        },
+        {
+          "key": "read/fgets/scanf",
+          "value": "Useful for catching user-controlled buffers early"
+        },
+        {
+          "key": "malloc/free",
+          "value": "Track heap buffers used in parsing, decoding, or validation"
+        },
+        {
+          "key": "exit/abort",
+          "value": "Catch failure paths or early termination logic"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "title": "Breakpoint Register Watching Tips",
+      "text": "On Linux x64, function arguments usually arrive in RDI, RSI, RDX, RCX, R8, and R9. On Win64, the first four arguments are usually RCX, RDX, R8, and R9. For easy crackmes, strcmp, strncmp, and memcmp are especially useful because they often expose both the expected data and the user-controlled data. For string functions, inspect pointer arguments with x/s. For raw byte compares, inspect buffers with x/16xb or x/32xb. For strlen on Linux x64, the string pointer is usually in RDI. For strcmp, the two string pointers are usually RDI and RSI on Linux x64. For memcmp, the two buffers are usually RDI and RSI and the length is often in RDX on Linux x64. After the function returns, inspect RAX because compare-style functions often return 0 for equality and nonzero otherwise."
+    },
+    {
+      "title": "BREAKPOINTS: WHAT TO LOOK AT",
+      "items": [
+        {
+          "key": "b strcmp",
+          "value": "Linux x64: inspect RDI and RSI with x/s $rdi and x/s $rsi"
+        },
+        {
+          "key": "b strncmp",
+          "value": "Inspect RDI, RSI, and RDX; RDX is often compare length"
+        },
+        {
+          "key": "b memcmp",
+          "value": "Inspect RDI, RSI, and RDX; use x/16xb on buffers for raw bytes"
+        },
+        {
+          "key": "b strlen",
+          "value": "Inspect RDI with x/s $rdi to see what string length is being checked"
+        },
+        {
+          "key": "b puts",
+          "value": "Inspect RDI to see printed success/failure strings"
+        },
+        {
+          "key": "b read",
+          "value": "Inspect RSI for destination buffer and RDX for requested length"
+        },
+        {
+          "key": "b scanf",
+          "value": "Inspect format string first, then destination pointers"
+        },
+        {
+          "key": "finish",
+          "value": "After stepping out of compare function, inspect RAX for return result"
+        }
+      ]
+    },
+    {
+      "title": "GDB QUICK WATCH PATTERNS",
+      "items": [
+        {
+          "key": "x/s $rdi",
+          "value": "Show string at first arg pointer"
+        },
+        {
+          "key": "x/s $rsi",
+          "value": "Show string at second arg pointer"
+        },
+        {
+          "key": "x/16xb $rdi",
+          "value": "Show first buffer as raw bytes"
+        },
+        {
+          "key": "x/16xb $rsi",
+          "value": "Show second buffer as raw bytes"
+        },
+        {
+          "key": "p/d $rdx",
+          "value": "Show compare/copy length as decimal"
+        },
+        {
+          "key": "finish",
+          "value": "Run until current function returns"
+        },
+        {
+          "key": "p/x $rax",
+          "value": "Inspect return value after function call"
+        },
+        {
+          "key": "display/i $rip",
+          "value": "Always show current instruction while stepping"
+        }
+      ]
+    },
+    {
       "title": "WINDBG",
       "items": [
         {
@@ -535,7 +659,7 @@
         }
       ]
     },
-        {
+    {
       "title": "Useful Terminal Commands",
       "items": [
         {
@@ -550,7 +674,7 @@
     }
   ],
   "ascii": {
-    "title": "ASCII TABLE 0\u2013255",
+    "title": "ASCII TABLE 0–255",
     "blocks_across": 6,
     "min_width_px": 920
   }
