@@ -82,25 +82,85 @@ body::after {
   font-size:clamp(.9rem, .6vw + .75rem, 1rem);
 }
 
-.nav {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
-  margin:0 0 14px;
+.nav-shell {
+  margin: 0 0 14px;
+}
+
+.nav-drawer {
+  border: 1px solid var(--line-dim);
+  background: linear-gradient(to bottom, #021202, #010601);
+  box-shadow:
+    0 0 10px rgba(0,255,102,0.06),
+    inset 0 0 6px rgba(0,255,102,0.04);
+}
+
+.nav-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  color: var(--bright);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  text-shadow: 0 0 6px var(--shadow), 0 0 12px var(--shadow);
+  border-bottom: 1px solid rgba(0,255,102,.14);
+}
+
+.nav-summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-summary::before {
+  content: "[+] ";
+}
+
+.nav-drawer[open] .nav-summary::before {
+  content: "[-] ";
+}
+
+.nav-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
 }
 
 .nav-link {
-  color:var(--bright);
-  text-decoration:none;
-  border:1px solid var(--line-dim);
-  padding:8px 10px;
-  border-radius:10px;
-  background:rgba(0,255,102,.04);
+  display: block;
+  color: var(--bright);
+  text-decoration: none;
+  border: 1px solid var(--line-dim);
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(0,255,102,.04);
+  text-align: center;
+  line-height: 1.25;
+}
+
+.nav-link:hover {
+  text-shadow: 0 0 8px var(--shadow);
+  background: rgba(0,255,102,.08);
 }
 
 .nav-link.active {
-  background:rgba(0,255,102,.12);
+  background: rgba(0,255,102,.14);
+  box-shadow: inset 0 0 8px rgba(0,255,102,.08);
+}
+
+@media (max-width: 1100px) {
+  .nav-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .nav-list {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-summary {
+    padding: 9px 10px;
+    font-size: .9rem;
+  }
 }
 
 .grid {
@@ -278,7 +338,7 @@ body::after {
       <div class="terminal-bar">{{TOP_BAR}}</div>
       <div class="title">{{PAGE_TITLE}}</div>
       <div class="subtitle">{{PAGE_SUBTITLE}}</div>
-      <nav class="nav">{{NAV_LINKS}}</nav>
+      {{NAV_HTML}}
       <div class="grid">{{SECTIONS_HTML}}</div>
       {{ASCII_HTML}}
     </div>

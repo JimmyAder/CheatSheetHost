@@ -198,13 +198,38 @@ def render_ascii(page: dict[str, Any]) -> str:
     """
 
 
-def render_nav(pages: dict[str, dict[str, Any]], current_slug: str | None = None) -> str:
+def render_nav(
+    pages: dict[str, dict[str, Any]],
+    current_slug: str | None = None,
+    open_by_default: bool = False
+) -> str:
+
     links = []
+
+    # --- Always add HOME link first ---
+    home_active = " active" if current_slug is None else ""
+    links.append(f"<a class='nav-link{home_active}' href='/'>[ / ] ROOT DIRECTORY</a>")
+
+    # --- Add all pages ---
     for slug, page in pages.items():
         title = html.escape(str(page.get("title", slug)))
         active = " active" if slug == current_slug else ""
         links.append(f"<a class='nav-link{active}' href='/{slug}'>{title}</a>")
-    return "".join(links)
+
+    open_attr = " open" if open_by_default else ""
+
+    return f"""
+    <section class="nav-shell">
+      <details class="nav-drawer"{open_attr}>
+        <summary class="nav-summary">
+          INDEX // {len(pages) + 1} PAGES // {'CURRENT: ' + html.escape(current_slug) if current_slug else 'HOME'}
+        </summary>
+        <div class="nav-list">
+          {''.join(links)}
+        </div>
+      </details>
+    </section>
+    """
 
 
 def render_home(pages: dict[str, dict[str, Any]], template: str) -> str:
@@ -227,10 +252,10 @@ def render_home(pages: dict[str, dict[str, Any]], template: str) -> str:
         )
     return (
         template
-        .replace("{{PAGE_TITLE}}", "LAN Content Site")
+        .replace("{{PAGE_TITLE}}", "LAN Reference Site")
         .replace("{{PAGE_SUBTITLE}}", "Edit JSON files in the pages folder and refresh.")
-        .replace("{{TOP_BAR}}", "Responsive LAN Content Site")
-        .replace("{{NAV_LINKS}}", render_nav(pages))
+        .replace("{{TOP_BAR}}", "LAN Cheatsheet Host // Home")
+        .replace("{{NAV_HTML}}", render_nav(pages, open_by_default=True))
         .replace("{{SECTIONS_HTML}}", "".join(cards))
         .replace("{{ASCII_HTML}}", "")
     )
@@ -246,7 +271,7 @@ def render_page(page: dict[str, Any], pages: dict[str, dict[str, Any]], template
         .replace("{{PAGE_TITLE}}", title)
         .replace("{{PAGE_SUBTITLE}}", subtitle)
         .replace("{{TOP_BAR}}", f"LAN Content Site // {title}")
-        .replace("{{NAV_LINKS}}", render_nav(pages, current_slug=page["slug"]))
+        .replace("{{NAV_HTML}}", render_nav(pages, current_slug=page["slug"], open_by_default=False))
         .replace("{{SECTIONS_HTML}}", sections_html)
         .replace("{{ASCII_HTML}}", ascii_html)
     )
@@ -296,14 +321,51 @@ class ContentHandler(BaseHTTPRequestHandler):
 DEFAULT_TEMPLATE = ""
 
 DEFAULT_PAGE = {
-  "slug": "ctf-cheatsheet",
-  "title": "CTF / Reverse Engineering Master Poster",
-  "subtitle": "Responsive CRT cheat sheet page loaded from JSON.",
+  "slug": "getting-started",
+  "title": "Getting Started with Cheatsheets",
+  "subtitle": "Learn how to create your own reference pages using JSON",
   "sections": [
-    {"title": "REGISTERS", "items": [{"key":"RAX","value":"return value / accumulator"},{"key":"RBX","value":"base / preserved register"},{"key":"RCX","value":"counter / arg 4 SysV"},{"key":"RDX","value":"data / arg 3 SysV"}]},
-    {"title": "PYTHON RE", "items": [{"key":"hex(255)","value":"int->hex"},{"key":"int('ff',16)","value":"hex->int"},{"key":"import base64","value":"b64"},{"key":"b64decode","value":"decode"}]}
+    {
+      "type": "text",
+      "title": "How This Works",
+      "text": "This is an automatically generated example page. When you add your own JSON files to the 'pages' folder, they will appear here instead. Each JSON file becomes a cheatsheet page with sections for organizing your content."
+    },
+    {
+      "type": "table",
+      "title": "Section Types Available",
+      "items": [
+        {"key": "text", "value": "Plain text content with line breaks"},
+        {"key": "table", "value": "Key-value pairs in tabular format"},
+        {"key": "code", "value": "Syntax-highlighted code blocks"},
+        {"key": "ascii", "value": "Character reference tables (optional)"}
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Table Formats",
+      "items": [
+        ["Dictionary", '{"key": "Command", "value": "Description"}'],
+        ["Array", '["key", "value"]'],
+        ["Mixed", "Both formats work in the same table"]
+      ]
+    },
+    {
+      "type": "code",
+      "title": "JSON Structure Example",
+      "language": "json",
+      "code": "{\n  \"slug\": \"my-cheatsheet\",\n  \"title\": \"My Reference Sheet\",\n  \"subtitle\": \"Brief description\",\n  \"sections\": [\n    {\n      \"type\": \"table\",\n      \"title\": \"Commands\",\n      \"items\": [\n        {\"key\": \"cmd\", \"value\": \"description\"}\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "type": "text",
+      "title": "Next Steps",
+      "text": "1. Create a new .json file in the pages/ folder\n2. Copy the structure shown above\n3. Add your own content\n4. Refresh your browser to see changes\n\nThe server automatically detects new files and updates the navigation."
+    }
   ],
-  "ascii": {"title":"ASCII TABLE 0–255","blocks_across":6,"min_width_px":920}
+  "ascii": {
+    "title": "ASCII Reference (1-127)",
+    "blocks_across": 4,
+    "min_width_px": 500
+  }
 }
 
 
