@@ -1,0 +1,504 @@
+{
+  "slug": "python-for-reverse-engineering",
+  "title": "Python for Reverse Engineering",
+  "subtitle": "Practical Python reference for parsing, decoding, emulating logic, and rebuilding algorithms from assembly or decompiler output.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "Scope and Safe Use",
+      "text": "This sheet is aimed at CTFs, crackmes, malware labs, protocol reversing, file format analysis, and other authorized reverse engineering. The biggest use of Python in RE is not fancy tooling first \u2014 it is quickly reconstructing logic from assembly or pseudocode so you can test assumptions, verify inputs, and automate tedious analysis."
+    },
+    {
+      "type": "text",
+      "title": "When Python Helps Most",
+      "text": "Use Python when a function is easier to re-express than single-step in a debugger. Good examples are: custom checksum routines, XOR/ROL string decoders, key validation logic, table lookups, bitfield parsing, file format unpacking, and hash reproduction. A short script often gives faster answers than prolonged manual tracing."
+    },
+    {
+      "type": "table",
+      "title": "CORE BUILT-INS YOU WILL USE CONSTANTLY",
+      "items": [
+        {
+          "key": "int()",
+          "value": "Convert strings / bytes to integers"
+        },
+        {
+          "key": "hex()",
+          "value": "Render integer as hex string"
+        },
+        {
+          "key": "bin()",
+          "value": "Render integer as binary string"
+        },
+        {
+          "key": "ord() / chr()",
+          "value": "Char <-> integer conversion"
+        },
+        {
+          "key": "bytes / bytearray",
+          "value": "Binary data containers"
+        },
+        {
+          "key": "len()",
+          "value": "Sizes, loop bounds, validation checks"
+        },
+        {
+          "key": "range()",
+          "value": "Loop over indexes / offsets"
+        },
+        {
+          "key": "enumerate()",
+          "value": "Index + value loops"
+        },
+        {
+          "key": "zip()",
+          "value": "Pair buffers or key/material streams"
+        },
+        {
+          "key": "sum()",
+          "value": "Checksums and accumulators"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "USEFUL MODULES",
+      "items": [
+        {
+          "key": "struct",
+          "value": "Pack/unpack binary formats"
+        },
+        {
+          "key": "base64",
+          "value": "Base64 encode/decode"
+        },
+        {
+          "key": "hashlib",
+          "value": "MD5/SHA family hashing"
+        },
+        {
+          "key": "binascii",
+          "value": "Hexlify/unhexlify, CRC helpers"
+        },
+        {
+          "key": "itertools",
+          "value": "Cartesian products, cycling, grouping"
+        },
+        {
+          "key": "re",
+          "value": "Pull data from logs / decompiler text"
+        },
+        {
+          "key": "pathlib",
+          "value": "File handling with clean paths"
+        },
+        {
+          "key": "capstone",
+          "value": "Disassembly in Python"
+        },
+        {
+          "key": "unicorn",
+          "value": "CPU emulation"
+        },
+        {
+          "key": "pwntools",
+          "value": "Convenient packing, networking, automation"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "NUMBER / HEX / BYTE CONVERSIONS",
+      "items": [
+        {
+          "key": "int('ff', 16)",
+          "value": "Hex string -> integer"
+        },
+        {
+          "key": "hex(255)",
+          "value": "Integer -> hex string"
+        },
+        {
+          "key": "bytes.fromhex('414243')",
+          "value": "Hex string -> bytes"
+        },
+        {
+          "key": "b'ABC'.hex()",
+          "value": "Bytes -> hex string"
+        },
+        {
+          "key": "int.from_bytes(b'\\x01\\x00', 'little')",
+          "value": "Bytes -> integer"
+        },
+        {
+          "key": "(1337).to_bytes(4, 'little')",
+          "value": "Integer -> bytes"
+        },
+        {
+          "key": "format(x, '08b')",
+          "value": "Binary string with padding"
+        },
+        {
+          "key": "f'{x:02x}'",
+          "value": "2-digit lowercase hex formatting"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ENDIANNESS PATTERNS",
+      "items": [
+        {
+          "key": "'little'",
+          "value": "Least significant byte first"
+        },
+        {
+          "key": "'big'",
+          "value": "Most significant byte first"
+        },
+        {
+          "key": "struct.unpack('<I', data)",
+          "value": "Little-endian uint32"
+        },
+        {
+          "key": "struct.unpack('>I', data)",
+          "value": "Big-endian uint32"
+        },
+        {
+          "key": "x.to_bytes(8, 'little')",
+          "value": "Pack 64-bit LE style values"
+        },
+        {
+          "key": "int.from_bytes(buf[i:i+4], 'big')",
+          "value": "Read a BE field from a buffer"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRUCT FORMAT BASICS",
+      "items": [
+        {
+          "key": "<",
+          "value": "Little-endian"
+        },
+        {
+          "key": ">",
+          "value": "Big-endian"
+        },
+        {
+          "key": "B / b",
+          "value": "Unsigned / signed byte"
+        },
+        {
+          "key": "H / h",
+          "value": "Unsigned / signed 16-bit"
+        },
+        {
+          "key": "I / i",
+          "value": "Unsigned / signed 32-bit"
+        },
+        {
+          "key": "Q / q",
+          "value": "Unsigned / signed 64-bit"
+        },
+        {
+          "key": "s",
+          "value": "Byte string"
+        },
+        {
+          "key": "struct.calcsize(fmt)",
+          "value": "Size of a packed layout"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BITWISE HELPERS",
+      "items": [
+        {
+          "key": "x & 1",
+          "value": "Check lowest bit"
+        },
+        {
+          "key": "(x >> n) & 1",
+          "value": "Check bit n"
+        },
+        {
+          "key": "x | (1 << n)",
+          "value": "Set bit n"
+        },
+        {
+          "key": "x & ~(1 << n)",
+          "value": "Clear bit n"
+        },
+        {
+          "key": "x ^ (1 << n)",
+          "value": "Toggle bit n"
+        },
+        {
+          "key": "x & 0xff",
+          "value": "Keep low byte"
+        },
+        {
+          "key": "((x << r) | (x >> (32-r))) & 0xffffffff",
+          "value": "ROL32 pattern"
+        },
+        {
+          "key": "((x >> r) | (x << (32-r))) & 0xffffffff",
+          "value": "ROR32 pattern"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STRING / BYTE WORK",
+      "items": [
+        {
+          "key": "data.decode('utf-8', errors='ignore')",
+          "value": "Bytes -> text safely"
+        },
+        {
+          "key": "text.encode()",
+          "value": "Text -> bytes"
+        },
+        {
+          "key": "data.split(b'\\x00')",
+          "value": "Split null-terminated regions"
+        },
+        {
+          "key": "data.rstrip(b'\\x00')",
+          "value": "Trim trailing nulls"
+        },
+        {
+          "key": "bytes([x, y, z])",
+          "value": "Build a byte sequence"
+        },
+        {
+          "key": "bytearray(data)",
+          "value": "Mutable binary buffer"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BASE64 / HASHING QUICK REFERENCE",
+      "items": [
+        {
+          "key": "import base64",
+          "value": "Base64 module"
+        },
+        {
+          "key": "base64.b64encode(data)",
+          "value": "Encode bytes"
+        },
+        {
+          "key": "base64.b64decode(text)",
+          "value": "Decode Base64"
+        },
+        {
+          "key": "hashlib.md5(data).hexdigest()",
+          "value": "MD5 digest"
+        },
+        {
+          "key": "hashlib.sha256(data).digest()",
+          "value": "Raw SHA-256 bytes"
+        },
+        {
+          "key": "binascii.crc32(data) & 0xffffffff",
+          "value": "CRC32-style helper"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "RECONSTRUCTING LOGIC FROM ASSEMBLY",
+      "items": [
+        {
+          "key": "Keep widths explicit",
+          "value": "Mask to 0xff / 0xffffffff / 0xffffffffffffffff as needed"
+        },
+        {
+          "key": "Respect signedness",
+          "value": "Assembly and decompilers often differ in sign interpretation"
+        },
+        {
+          "key": "Translate loops directly first",
+          "value": "Make it correct before making it pretty"
+        },
+        {
+          "key": "Name intermediates semantically",
+          "value": "acc, key_idx, state, checksum, out_byte"
+        },
+        {
+          "key": "Verify each stage",
+          "value": "Print intermediate values against debugger observations"
+        },
+        {
+          "key": "Preserve operation order",
+          "value": "Especially for shifts, rotates, and xor/add chains"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON SCRIPT TYPES AFTER REVERSING",
+      "items": [
+        {
+          "key": "Decoder script",
+          "value": "Recover hidden strings/config from a transform"
+        },
+        {
+          "key": "Parser script",
+          "value": "Read custom files / packets / records"
+        },
+        {
+          "key": "Hash reproducer",
+          "value": "Rebuild checksum or key verification routines"
+        },
+        {
+          "key": "Input generator",
+          "value": "Produce values that satisfy validation logic in a crackme/lab"
+        },
+        {
+          "key": "Bruteforce harness",
+          "value": "Search small keyspaces or constrained values"
+        },
+        {
+          "key": "Emulation helper",
+          "value": "Execute a tiny function model outside the target binary"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: SIMPLE XOR DECODER",
+      "language": "python",
+      "code": "data = bytes.fromhex('1023324150')\nkey = 0x55\ndecoded = bytes(b ^ key for b in data)\nprint(decoded)\nprint(decoded.decode('utf-8', errors='ignore'))"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: REPEATING-KEY XOR",
+      "language": "python",
+      "code": "data = b'\\x10\\x20\\x30\\x40\\x50'\nkey = b'KEY'\nout = bytes(data[i] ^ key[i % len(key)] for i in range(len(data)))\nprint(out.hex())"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: LITTLE-ENDIAN PARSING",
+      "language": "python",
+      "code": "import struct\n\nbuf = bytes.fromhex('78563412efbeadde')\na, b = struct.unpack('<II', buf)\nprint(hex(a), hex(b))"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: MANUAL ROL32",
+      "language": "python",
+      "code": "def rol32(x, r):\n    x &= 0xffffffff\n    return ((x << r) | (x >> (32 - r))) & 0xffffffff\n\nprint(hex(rol32(0x12345678, 8)))"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: REBUILDING A CHECKSUM FROM PSEUDOCODE",
+      "language": "python",
+      "code": "def checksum(data: bytes) -> int:\n    acc = 0x1337\n    for b in data:\n        acc = ((acc << 5) + acc) ^ b\n        acc &= 0xffffffff\n    return acc\n\nprint(hex(checksum(b'test')))"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: INPUT GENERATOR FROM GHIDRA-LIKE LOGIC",
+      "language": "python",
+      "code": "# Suppose decompiler logic was effectively:\n# sum(input[i] ^ 0x20 for i in range(4)) == 300\n\ntarget = 300\ncandidate = b'ABCD'\nvalue = sum(c ^ 0x20 for c in candidate)\nprint(candidate, value)\n\n# Replace the candidate generation logic with brute force or constraints as needed."
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: SMALL CRACKME / LAB BRUTE FORCE HARNESS",
+      "language": "python",
+      "code": "import itertools\nimport string\n\nalphabet = string.ascii_uppercase\n\ndef check(s: str) -> bool:\n    # Replace this with logic reconstructed from assembly / pseudocode\n    return len(s) == 4 and ((ord(s[0]) ^ 0x20) + ord(s[1])) == 150\n\nfor cand in map(''.join, itertools.product(alphabet, repeat=4)):\n    if check(cand):\n        print('match:', cand)\n        break"
+    },
+    {
+      "type": "text",
+      "title": "About Crackers / Keygens in Practice",
+      "text": "For crackmes, CTFs, and authorized labs, the usual Python workflow is: rebuild the check routine, validate your reimplementation with known examples, then either derive the valid input algebraically or brute force the constrained search space. In practice, most scripts are really 'input generators' or 'check reimplementations' rather than anything magical."
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: REIMPLEMENTING A KEY CHECK FROM PSEUDOCODE",
+      "language": "python",
+      "code": "def check_key(key: bytes) -> bool:\n    if len(key) != 8:\n        return False\n    acc = 0\n    for i, b in enumerate(key):\n        acc += ((b ^ 0x5A) + i)\n        acc &= 0xffffffff\n    return acc == 0x2F4\n\nprint(check_key(b'AAAAAAAB'))"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: PARSING A CUSTOM RECORD",
+      "language": "python",
+      "code": "import struct\n\nbuf = bytes.fromhex('0100040041424344')\nrtype, length = struct.unpack('<HH', buf[:4])\npayload = buf[4:4+length]\nprint(rtype, length, payload)"
+    },
+    {
+      "type": "table",
+      "title": "HELPFUL THIRD-PARTY LIBRARIES",
+      "items": [
+        {
+          "key": "capstone",
+          "value": "Disassemble bytes in Python"
+        },
+        {
+          "key": "unicorn",
+          "value": "Emulate small code snippets"
+        },
+        {
+          "key": "keystone",
+          "value": "Assemble instructions from text"
+        },
+        {
+          "key": "pwntools",
+          "value": "Packing, ELF helpers, networking, remote automation"
+        },
+        {
+          "key": "angr",
+          "value": "Symbolic execution / advanced analysis"
+        },
+        {
+          "key": "lief",
+          "value": "Binary format parsing and modification"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: CAPSTONE DISASSEMBLY",
+      "language": "python",
+      "code": "from capstone import Cs, CS_ARCH_X86, CS_MODE_64\n\ncode = bytes.fromhex('4831c0c3')\nmd = Cs(CS_ARCH_X86, CS_MODE_64)\nfor insn in md.disasm(code, 0x1000):\n    print(hex(insn.address), insn.mnemonic, insn.op_str)"
+    },
+    {
+      "type": "code",
+      "title": "EXAMPLE: PWNLIB PACK / UNPACK",
+      "language": "python",
+      "code": "from pwn import p32, p64, u32, u64\n\nprint(p32(0x12345678))\nprint(hex(u32(b'ABCD')))"
+    },
+    {
+      "type": "table",
+      "title": "GOOD HABITS WHEN WRITING RE SCRIPTS",
+      "items": [
+        {
+          "key": "Keep test vectors",
+          "value": "Verify against known outputs from debugger / target"
+        },
+        {
+          "key": "Print intermediates",
+          "value": "Match assembly stages step-by-step"
+        },
+        {
+          "key": "Mask widths explicitly",
+          "value": "Avoid accidental Python big-int behavior"
+        },
+        {
+          "key": "Separate parse / transform / check",
+          "value": "Makes scripts easier to verify"
+        },
+        {
+          "key": "Prefer bytes over str for binary work",
+          "value": "Avoid encoding confusion"
+        },
+        {
+          "key": "Comment where the logic came from",
+          "value": "Function name, address, or pseudocode source"
+        }
+      ]
+    }
+  ]
+}

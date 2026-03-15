@@ -1,0 +1,518 @@
+{
+  "slug": "bitwise-crypto-pattern-recognition",
+  "title": "Bitwise / Crypto Pattern Recognition",
+  "subtitle": "Reference sheet for spotting common bitwise operations, encoders, hashes, and crypto-related patterns during reverse engineering.",
+  "sections": [
+    {
+      "type": "text",
+      "title": "How to Use This Sheet",
+      "text": "This sheet is for pattern recognition, not just definitions. When reversing, the main goal is to quickly identify what a loop or function is probably doing. Look for repeated constants, loop shapes, shifts/rotates, XORs, table lookups, byte swapping, and accumulator updates. Use this as a mental checklist when a function looks like decoding, hashing, packing, encryption, or bitfield handling."
+    },
+    {
+      "type": "table",
+      "title": "CORE BITWISE OPERATIONS",
+      "items": [
+        {
+          "key": "AND",
+          "value": "Mask bits, test flags, keep selected bits"
+        },
+        {
+          "key": "OR",
+          "value": "Set bits, combine flags"
+        },
+        {
+          "key": "XOR",
+          "value": "Toggle bits, reversible transform, zeroing idiom"
+        },
+        {
+          "key": "NOT",
+          "value": "Invert bits"
+        },
+        {
+          "key": "SHL / SAL",
+          "value": "Left shift, multiply by powers of two"
+        },
+        {
+          "key": "SHR",
+          "value": "Logical right shift, unsigned divide by powers of two"
+        },
+        {
+          "key": "SAR",
+          "value": "Arithmetic right shift, signed divide by powers of two"
+        },
+        {
+          "key": "ROL / ROR",
+          "value": "Rotate bits; very common in hashes and custom ciphers"
+        },
+        {
+          "key": "RCL / RCR",
+          "value": "Rotate through carry"
+        },
+        {
+          "key": "TEST",
+          "value": "AND for flags only; common for flag checks"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON BIT-MASK PATTERNS",
+      "items": [
+        {
+          "key": "x & 1",
+          "value": "Check lowest bit"
+        },
+        {
+          "key": "(x >> n) & 1",
+          "value": "Check bit n"
+        },
+        {
+          "key": "x & 0xFF",
+          "value": "Keep low byte"
+        },
+        {
+          "key": "x & 0xFFFF",
+          "value": "Keep low 16 bits"
+        },
+        {
+          "key": "x | (1 << n)",
+          "value": "Set bit n"
+        },
+        {
+          "key": "x & ~(1 << n)",
+          "value": "Clear bit n"
+        },
+        {
+          "key": "x ^ (1 << n)",
+          "value": "Toggle bit n"
+        },
+        {
+          "key": "x & (x - 1)",
+          "value": "Clear lowest set bit"
+        },
+        {
+          "key": "x & -x",
+          "value": "Isolate lowest set bit"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "REVERSING CLUES FOR XOR",
+      "items": [
+        {
+          "key": "xor reg, reg",
+          "value": "Zeroing idiom, not encryption"
+        },
+        {
+          "key": "byte ^= key",
+          "value": "Simple XOR encoding/decoding"
+        },
+        {
+          "key": "buf[i] ^ key[i % n]",
+          "value": "Repeating-key XOR"
+        },
+        {
+          "key": "buf[i] ^ i",
+          "value": "Index-dependent obfuscation"
+        },
+        {
+          "key": "XOR is reversible",
+          "value": "Same operation often decodes and encodes"
+        },
+        {
+          "key": "ASCII outputs after XOR",
+          "value": "Strong clue for string decoding"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ROTATE / SHIFT PATTERN CLUES",
+      "items": [
+        {
+          "key": "rol/ror in loops",
+          "value": "Common in hashes, obfuscators, and toy ciphers"
+        },
+        {
+          "key": "shift + mask",
+          "value": "Bitfield extraction or packing"
+        },
+        {
+          "key": "shift + OR",
+          "value": "Byte assembly, endianness conversion, bit packing"
+        },
+        {
+          "key": "sar + compare",
+          "value": "Signed arithmetic / range handling"
+        },
+        {
+          "key": "rol/ror + xor + add",
+          "value": "Strong sign of hash or custom transform"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "ENDIANNESS CLUES",
+      "items": [
+        {
+          "key": "byte swaps",
+          "value": "Potential network/file parsing or crypto prep"
+        },
+        {
+          "key": "bswap reg",
+          "value": "Explicit endian swap"
+        },
+        {
+          "key": "(b0<<24)|(b1<<16)|...",
+          "value": "Manual big-endian or little-endian assembly"
+        },
+        {
+          "key": "MOVBE",
+          "value": "Move with byte swap semantics on supported CPUs"
+        },
+        {
+          "key": "Wrong-looking constants",
+          "value": "Might just be reversed byte order"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON HASH PATTERN CLUES",
+      "items": [
+        {
+          "key": "Accumulator loop",
+          "value": "hash = f(hash, byte) repeated over data"
+        },
+        {
+          "key": "Multiply by constant",
+          "value": "Common in non-crypto hashes"
+        },
+        {
+          "key": "XOR then multiply",
+          "value": "Common hash structure"
+        },
+        {
+          "key": "ROL/ROR + ADD/XOR",
+          "value": "Common hash mixing pattern"
+        },
+        {
+          "key": "Table lookup by byte",
+          "value": "Could be CRC or table-driven hash"
+        },
+        {
+          "key": "Final avalanche steps",
+          "value": "Extra shifts/xors/multiplies near function end"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON HASHES TO RECOGNIZE",
+      "items": [
+        {
+          "key": "DJB2",
+          "value": "hash = hash * 33 + c ; often starts at 5381"
+        },
+        {
+          "key": "sdbm",
+          "value": "hash = c + (hash<<6) + (hash<<16) - hash"
+        },
+        {
+          "key": "FNV-1 / FNV-1a",
+          "value": "XOR and multiply by FNV prime"
+        },
+        {
+          "key": "CRC32",
+          "value": "Table lookup or polynomial-based bit loop"
+        },
+        {
+          "key": "Jenkins-style mix",
+          "value": "Heavy shifts, xors, adds across accumulators"
+        },
+        {
+          "key": "Adler32",
+          "value": "Two running sums, modulus operations"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CRC PATTERN CLUES",
+      "items": [
+        {
+          "key": "256-entry table",
+          "value": "Strong sign of table-driven CRC"
+        },
+        {
+          "key": "Polynomial constants",
+          "value": "Strong clue for CRC family"
+        },
+        {
+          "key": "Per-byte lookup + xor",
+          "value": "Classic CRC style"
+        },
+        {
+          "key": "Bit-at-a-time loop",
+          "value": "Shift, test low/high bit, xor polynomial"
+        },
+        {
+          "key": "Init/final xor",
+          "value": "Common CRC setup/finalization"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BASE64 PATTERN CLUES",
+      "items": [
+        {
+          "key": "4 output chars for 3 input bytes",
+          "value": "Core Base64 structure"
+        },
+        {
+          "key": "Alphabet table",
+          "value": "A-Z a-z 0-9 + / or URL-safe variant"
+        },
+        {
+          "key": "'=' padding",
+          "value": "Strong Base64 clue"
+        },
+        {
+          "key": "6-bit extraction",
+          "value": "Masks/shifts around 0x3F"
+        },
+        {
+          "key": "Reverse lookup table",
+          "value": "Decode-side Base64 pattern"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "HEX / NIBBLE PROCESSING CLUES",
+      "items": [
+        {
+          "key": "4-bit chunks",
+          "value": "Hex or nibble-based parsing"
+        },
+        {
+          "key": "0-9 / A-F / a-f checks",
+          "value": "Hex decode"
+        },
+        {
+          "key": "(c << 4) | d",
+          "value": "Combine two nibbles into one byte"
+        },
+        {
+          "key": "to/from ascii hex",
+          "value": "Common in config, keys, and obfuscators"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "STREAM / BLOCK CIPHER CLUES",
+      "items": [
+        {
+          "key": "Keystream XOR",
+          "value": "Stream-cipher-like structure"
+        },
+        {
+          "key": "Fixed-size rounds",
+          "value": "Block-cipher-like behavior"
+        },
+        {
+          "key": "S-box tables",
+          "value": "Common in symmetric crypto"
+        },
+        {
+          "key": "Round constants",
+          "value": "Common in AES-like or TEA-like designs"
+        },
+        {
+          "key": "Split halves",
+          "value": "Feistel-network clue"
+        },
+        {
+          "key": "Multiple rounds with same shape",
+          "value": "Very strong block cipher sign"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "TEA / XTEA STYLE CLUES",
+      "items": [
+        {
+          "key": "delta constant",
+          "value": "Very recognizable in TEA-family algorithms"
+        },
+        {
+          "key": "32 rounds",
+          "value": "Common TEA-style count"
+        },
+        {
+          "key": "Two 32-bit halves",
+          "value": "v0 / v1 style Feistel-like updates"
+        },
+        {
+          "key": "shifts + xor + add",
+          "value": "Classic TEA/XTEA shape"
+        },
+        {
+          "key": "sum accumulator",
+          "value": "Very strong TEA clue"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "AES-LIKE CLUES",
+      "items": [
+        {
+          "key": "256-byte S-box",
+          "value": "Strong AES clue"
+        },
+        {
+          "key": "SubBytes / MixColumns shape",
+          "value": "Table-heavy byte substitution/mixing"
+        },
+        {
+          "key": "10/12/14 rounds",
+          "value": "AES-128/192/256 round counts"
+        },
+        {
+          "key": "Key schedule expansion",
+          "value": "Repeated round-key derivation"
+        },
+        {
+          "key": "Rcon constants",
+          "value": "AES key schedule clue"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BITFIELD / PACKING CLUES",
+      "items": [
+        {
+          "key": "Many masks and shifts",
+          "value": "Flags, headers, protocol fields"
+        },
+        {
+          "key": "field = (x >> n) & mask",
+          "value": "Bitfield extraction"
+        },
+        {
+          "key": "x |= field << n",
+          "value": "Bitfield insertion"
+        },
+        {
+          "key": "Mixed small constants",
+          "value": "Likely format/packing logic, not crypto"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "OBFUSCATION CLUES",
+      "items": [
+        {
+          "key": "Tiny XOR loop",
+          "value": "String or config decoding"
+        },
+        {
+          "key": "Arithmetic with index",
+          "value": "Simple custom obfuscation"
+        },
+        {
+          "key": "Rotate + constant per byte",
+          "value": "Toy encoder/decoder"
+        },
+        {
+          "key": "Decode once then use",
+          "value": "Runtime string / config reveal"
+        },
+        {
+          "key": "Stack-built strings",
+          "value": "Hidden strings or anti-static-analysis trick"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "TRIAGE QUESTIONS FOR A SUSPICIOUS LOOP",
+      "items": [
+        {
+          "key": "What is the unit?",
+          "value": "Byte, word, dword, block?"
+        },
+        {
+          "key": "What is the state?",
+          "value": "Single accumulator, multiple accumulators, key buffer?"
+        },
+        {
+          "key": "What constants repeat?",
+          "value": "Primes, deltas, masks, alphabet sizes, round counts?"
+        },
+        {
+          "key": "Is there a table?",
+          "value": "S-box, CRC table, alphabet, reverse lookup?"
+        },
+        {
+          "key": "Is it reversible?",
+          "value": "XOR and some rotates often are; hashes usually are not"
+        },
+        {
+          "key": "Where is output used?",
+          "value": "Comparison, decode, file write, network send, next stage?"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: SIMPLE XOR DECODE",
+      "language": "text",
+      "code": "for i in range(len(buf)):\n    buf[i] ^= key\n\nClue: one byte key, reversible, often used for short strings or configs."
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: REPEATING-KEY XOR",
+      "language": "text",
+      "code": "for i in range(len(buf)):\n    out[i] = buf[i] ^ key[i % key_len]\n\nClue: repeating key schedule, common in toy ciphers and crackmes."
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: CRC-LIKE TABLE LOOP",
+      "language": "text",
+      "code": "crc = table[(crc ^ byte) & 0xFF] ^ (crc >> 8)\n\nClue: 256-entry table, byte-indexed lookup, rolling accumulator."
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: DJB2-STYLE HASH",
+      "language": "text",
+      "code": "hash = 5381\nfor c in data:\n    hash = ((hash << 5) + hash) + c\n\nClue: multiply by 33 using shift+add."
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: FNV-1A-STYLE HASH",
+      "language": "text",
+      "code": "hash ^= byte\nhash *= PRIME\n\nClue: xor then multiply by fixed constant in a byte loop."
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: BASE64 ENCODE/DECODE SHAPE",
+      "language": "text",
+      "code": "Take 3 bytes -> split into 4 groups of 6 bits -> map through alphabet.\nFor decode: reverse-map chars -> combine 6-bit chunks back to bytes.\n\nClue: shifts/masks with 0x3F and alphabet tables."
+    },
+    {
+      "type": "code",
+      "title": "PATTERN: TEA-LIKE ROUND SHAPE",
+      "language": "text",
+      "code": "sum += delta\nv0 += ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1)\nv1 += ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3)\n\nClue: shifts, xor, add, two halves, repeated rounds, delta constant."
+    }
+  ]
+}
