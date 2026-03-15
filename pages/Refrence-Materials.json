@@ -1,0 +1,103 @@
+{
+  "slug": "helpful-links",
+  "title": "Helpful Links & Study References",
+  "subtitle": "Reverse Engineering, CTFs, Crypto, Binary Internals, and Practice Platforms.",
+  "sections": [
+
+    {
+      "type": "table",
+      "title": "Reverse Engineering Tools",
+      "items": [
+        { "key": "Ghidra", "value": "https://ghidra-sre.org/" },
+        { "key": "IDA Pro", "value": "https://hex-rays.com/" },
+        { "key": "x64dbg", "value": "https://x64dbg.com/" },
+        { "key": "Radare2", "value": "https://rada.re/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Assembly / CPU References",
+      "items": [
+        { "key": "Intel Manuals", "value": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" },
+        { "key": "x86 Opcode Ref", "value": "https://www.felixcloutier.com/x86/" },
+        { "key": "Agner Fog Docs", "value": "https://www.agner.org/optimize/" },
+        { "key": "x86-64 Playground", "value": "https://app.x64.halb.it/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Binary Format Docs",
+      "items": [
+        { "key": "PE Format Spec", "value": "https://learn.microsoft.com/en-us/windows/win32/debug/pe-format" },
+        { "key": "ELF Spec", "value": "https://refspecs.linuxfoundation.org/elf/" },
+        { "key": "LIEF Library", "value": "https://lief.quarkslab.com/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Crypto / Hash References",
+      "items": [
+        { "key": "CryptoPals", "value": "https://cryptopals.com/" },
+        { "key": "RFC 1321 (MD5)", "value": "https://www.rfc-editor.org/rfc/rfc1321" },
+        { "key": "FIPS 180-4 (SHA)", "value": "https://csrc.nist.gov/publications/detail/fips/180/4/final" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "CTF Practice Platforms",
+      "items": [
+        { "key": "picoCTF", "value": "https://picoctf.org/" },
+        { "key": "HackTheBox", "value": "https://www.hackthebox.com/" },
+        { "key": "TryHackMe", "value": "https://tryhackme.com/" },
+        { "key": "OverTheWire", "value": "https://overthewire.org/" },
+        { "key": "CTFtime", "value": "https://ctftime.org/" },
+        { "key": "Root-Me", "value": "https://www.root-me.org/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Crackme / Reverse Engineering Practice",
+      "items": [
+        { "key": "Crackmes.one", "value": "https://crackmes.one/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Binary Exploitation Practice",
+      "items": [
+        { "key": "ROP Emporium", "value": "https://ropemporium.com/" },
+        { "key": "pwnable.kr", "value": "http://pwnable.kr/" },
+        { "key": "pwnable.tw", "value": "https://pwnable.tw/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Programming / Algorithm Practice",
+      "items": [
+        { "key": "LeetCode", "value": "https://leetcode.com/" },
+        { "key": "HackerRank", "value": "https://www.hackerrank.com/" },
+        { "key": "Codeforces", "value": "https://codeforces.com/" },
+        { "key": "Exercism", "value": "https://exercism.org/" }
+      ]
+    },
+
+    {
+      "type": "table",
+      "title": "Python RE Libraries",
+      "items": [
+        { "key": "Capstone", "value": "http://www.capstone-engine.org/" },
+        { "key": "Unicorn", "value": "http://www.unicorn-engine.org/" },
+        { "key": "pwntools", "value": "https://docs.pwntools.com/" },
+        { "key": "angr", "value": "https://angr.io/" }
+      ]
+    }
+
+  ]
+}

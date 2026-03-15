@@ -89,13 +89,22 @@ def render_sections(page: dict[str, Any]) -> str:
             for item in items:
                 if isinstance(item, dict):
                     key = html.escape(str(item.get("key", "")))
-                    value = html.escape(str(item.get("value", "")))
+                    raw_value = str(item.get("value", ""))
                 elif isinstance(item, list) and len(item) >= 2:
                     key = html.escape(str(item[0]))
-                    value = html.escape(str(item[1]))
+                    raw_value = str(item[1])
                 else:
                     key = ""
-                    value = html.escape(str(item))
+                    raw_value = str(item)
+
+                if raw_value.startswith(("http://", "https://")):
+                    value = (
+                        f"<a href='{html.escape(raw_value)}' "
+                        f"target='_blank' rel='noopener noreferrer' "
+                        f"class='ext-link'>{html.escape(raw_value)}</a>"
+                    )
+                else:
+                    value = html.escape(raw_value)
 
                 rows.append(f"<tr><td class='k'>{key}</td><td class='v'>{value}</td></tr>")
 
