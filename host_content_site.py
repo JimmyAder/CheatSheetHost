@@ -7,13 +7,31 @@ import json
 import socket
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any 
+from typing import Any
+from urllib.parse import urlparse
+import re
+
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATE_FILE = BASE_DIR / "site_template.html"
 PAGES_DIR = BASE_DIR / "pages"
+RESERVED_SLUGS = {"", "index.html", "api", "api/pages"}
+MAX_JSON_SIZE = 512 * 1024  # 512 KB
 DEFAULT_PORT = 8766
 
+
+def is_safe_slug(slug: str) -> bool:
+    return bool(re.fullmatch(r"[a-zA-Z0-9._-]+", slug)) and slug not in RESERVED_SLUGS
+
+
+def is_safe_url(url: str) -> bool:
+    try:
+        parsed = urlparse(str(url).strip())
+        return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+    except Exception:
+        return False
+    
+    
 def get_local_ip() -> str:
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -23,6 +41,7 @@ def get_local_ip() -> str:
         return "127.0.0.1"
     finally:
         sock.close()
+
 
 def ensure_defaults() -> None:
     PAGES_DIR.mkdir(exist_ok=True)
@@ -48,11 +67,20 @@ def load_pages() -> dict[str, dict[str, Any]]:
     pages: dict[str, dict[str, Any]] = {}
     for file in sorted(PAGES_DIR.glob("*.json")):
         try:
+            if file.stat().st_size > MAX_JSON_SIZE:
+                print(f"Skipping oversized JSON file {file.name}")
+                continue
             data = json.loads(file.read_text(encoding="utf-8"))
         except Exception as exc:
             print(f"Skipping invalid JSON file {file.name}: {exc}")
             continue
         slug = str(data.get("slug") or file.stem).strip() or file.stem
+        if not is_safe_slug(slug):
+            print(f"Skipping unsafe slug in {file.name}: {slug!r}")
+            continue
+        if slug in pages:
+            print(f"Skipping duplicate slug in {file.name}: {slug!r}")
+            continue
         data["slug"] = slug
         data["_source_file"] = file.name
         pages[slug] = data
@@ -285,6 +313,13 @@ class ContentHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'none'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+        )
         self.end_headers()
         self.wfile.write(data)
 
