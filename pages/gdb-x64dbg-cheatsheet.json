@@ -1,7 +1,7 @@
 {
-  "slug": "gdb-x64dbg-cheatsheet",
-  "title": "GDB + x64dbg Cheat Sheet",
-  "subtitle": "Quick reference for Linux GDB and Windows x64dbg workflows.",
+  "slug": "gdb-pwndbg-cheatsheet",
+  "title": "GDB + Pwndbg Cheat Sheet",
+  "subtitle": "Quick reference for Linux GDB and Pwndbg workflows, breakpoint strategy, register watching, memory inspection, and CTF debugging.",
   "sections": [
     {
       "type": "table",
@@ -10,6 +10,10 @@
         {
           "key": "gdb ./prog",
           "value": "Open binary"
+        },
+        {
+          "key": "gdb -q ./prog",
+          "value": "Quiet startup"
         },
         {
           "key": "run",
@@ -26,6 +30,10 @@
         {
           "key": "set disassembly-flavor intel",
           "value": "Use Intel syntax"
+        },
+        {
+          "key": "set pagination off",
+          "value": "Disable paging for long output"
         }
       ]
     },
@@ -56,6 +64,14 @@
         {
           "key": "watch expr",
           "value": "Watchpoint on expression"
+        },
+        {
+          "key": "rwatch expr",
+          "value": "Break on read of expression"
+        },
+        {
+          "key": "awatch expr",
+          "value": "Break on read/write access"
         }
       ]
     },
@@ -86,6 +102,10 @@
         {
           "key": "continue",
           "value": "Resume execution"
+        },
+        {
+          "key": "until",
+          "value": "Run until current line/address range is passed"
         }
       ]
     },
@@ -120,6 +140,18 @@
         {
           "key": "p/x expr",
           "value": "Print expression in hex"
+        },
+        {
+          "key": "p/d expr",
+          "value": "Print expression in decimal"
+        },
+        {
+          "key": "info args",
+          "value": "Show function args if symbols/debug info help"
+        },
+        {
+          "key": "info locals",
+          "value": "Show locals if available"
         }
       ]
     },
@@ -154,6 +186,285 @@
         {
           "key": "x/20xb addr",
           "value": "20 bytes in hex"
+        },
+        {
+          "key": "x/8gx addr",
+          "value": "8 quadwords from address"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "COMMON BREAKPOINT TARGETS",
+      "items": [
+        {
+          "key": "b strcmp",
+          "value": "Classic crackme target; inspect both strings being compared"
+        },
+        {
+          "key": "b strncmp",
+          "value": "Useful for partial compare or prefix checks"
+        },
+        {
+          "key": "b memcmp",
+          "value": "Useful for raw byte/key/buffer compares"
+        },
+        {
+          "key": "b strlen",
+          "value": "See what string length is being validated"
+        },
+        {
+          "key": "b puts",
+          "value": "Catch success/failure messages"
+        },
+        {
+          "key": "b printf",
+          "value": "Catch formatted outputs and nearby logic"
+        },
+        {
+          "key": "b read",
+          "value": "Catch raw input buffers early"
+        },
+        {
+          "key": "b fgets",
+          "value": "Catch line input buffers"
+        },
+        {
+          "key": "b scanf",
+          "value": "Catch parsed input destinations"
+        },
+        {
+          "key": "b malloc",
+          "value": "Track important heap allocations"
+        },
+        {
+          "key": "b free",
+          "value": "Track buffer lifetimes and cleanup"
+        },
+        {
+          "key": "b exit",
+          "value": "Catch failure/termination paths"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "BREAKPOINTS: WHAT REGISTERS TO CHECK",
+      "items": [
+        {
+          "key": "strcmp (Linux x64)",
+          "value": "RDI = first string, RSI = second string"
+        },
+        {
+          "key": "strncmp (Linux x64)",
+          "value": "RDI = first string, RSI = second string, RDX = length"
+        },
+        {
+          "key": "memcmp (Linux x64)",
+          "value": "RDI = first buffer, RSI = second buffer, RDX = length"
+        },
+        {
+          "key": "strlen (Linux x64)",
+          "value": "RDI = string pointer"
+        },
+        {
+          "key": "puts (Linux x64)",
+          "value": "RDI = string pointer being printed"
+        },
+        {
+          "key": "read (Linux x64 libc wrapper)",
+          "value": "RDI = fd, RSI = buffer, RDX = count"
+        },
+        {
+          "key": "Win64 reminder",
+          "value": "RCX, RDX, R8, R9 usually hold first four args"
+        },
+        {
+          "key": "Return value",
+          "value": "RAX after finish/return"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "GDB QUICK WATCH PATTERNS",
+      "items": [
+        {
+          "key": "x/s $rdi",
+          "value": "Show first string arg"
+        },
+        {
+          "key": "x/s $rsi",
+          "value": "Show second string arg"
+        },
+        {
+          "key": "x/16xb $rdi",
+          "value": "Show first buffer bytes"
+        },
+        {
+          "key": "x/16xb $rsi",
+          "value": "Show second buffer bytes"
+        },
+        {
+          "key": "p/d $rdx",
+          "value": "Show length/count in decimal"
+        },
+        {
+          "key": "finish",
+          "value": "Run until current function returns"
+        },
+        {
+          "key": "p/x $rax",
+          "value": "Inspect compare or return result"
+        },
+        {
+          "key": "display/i $rip",
+          "value": "Always show current instruction while stepping"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "title": "Breakpoint Strategy Tips",
+      "text": "For easy crackmes, strcmp, strncmp, memcmp, and strlen are usually the highest-value breakpoints because they often expose expected data, input data, and compare lengths. When a breakpoint hits, inspect function argument registers first, then follow the memory they point to with x/s or x/16xb. After the function returns, inspect RAX because 0 often means equality for compare functions. If you see a hidden success string in puts or printf, backtrace and inspect the preceding compare/jump logic."
+    },
+    {
+      "type": "table",
+      "title": "PWNDBG BASICS",
+      "items": [
+        {
+          "key": "context",
+          "value": "Show regs, code, stack, and more in one view"
+        },
+        {
+          "key": "context regs",
+          "value": "Registers-focused context"
+        },
+        {
+          "key": "context code",
+          "value": "Code-focused context"
+        },
+        {
+          "key": "context stack",
+          "value": "Stack-focused context"
+        },
+        {
+          "key": "telescope addr",
+          "value": "Walk pointers from an address"
+        },
+        {
+          "key": "stack",
+          "value": "Pretty stack display"
+        },
+        {
+          "key": "regs",
+          "value": "Pretty register display"
+        },
+        {
+          "key": "nearpc",
+          "value": "Instructions around current PC"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PWNDBG MEMORY / HEAP",
+      "items": [
+        {
+          "key": "vmmap",
+          "value": "Show memory map"
+        },
+        {
+          "key": "heap",
+          "value": "Heap summary"
+        },
+        {
+          "key": "bins",
+          "value": "Show allocator bins"
+        },
+        {
+          "key": "fastbins",
+          "value": "Fastbin view"
+        },
+        {
+          "key": "unsortedbin",
+          "value": "Unsorted bin view"
+        },
+        {
+          "key": "find /bin/sh",
+          "value": "Search memory for string or data"
+        },
+        {
+          "key": "search -x 41414141",
+          "value": "Search memory for hex pattern"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PWNDBG EXPLOIT / PWN HELPERS",
+      "items": [
+        {
+          "key": "cyclic N",
+          "value": "Generate cyclic pattern"
+        },
+        {
+          "key": "cyclic -l value",
+          "value": "Find offset of overwritten value"
+        },
+        {
+          "key": "canary",
+          "value": "Show stack canary if found"
+        },
+        {
+          "key": "checksec",
+          "value": "Show NX, PIE, RELRO, Canary, etc."
+        },
+        {
+          "key": "got",
+          "value": "Show GOT entries"
+        },
+        {
+          "key": "plt",
+          "value": "Show PLT entries"
+        },
+        {
+          "key": "rop",
+          "value": "ROP gadget helper if available in setup"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "PWNDBG COMMON WORKFLOW",
+      "items": [
+        {
+          "key": "start",
+          "value": "Run to early execution point"
+        },
+        {
+          "key": "context",
+          "value": "Get instant snapshot"
+        },
+        {
+          "key": "b *addr / b function",
+          "value": "Break on validation or crash path"
+        },
+        {
+          "key": "telescope $rsp",
+          "value": "Inspect stack contents quickly"
+        },
+        {
+          "key": "vmmap",
+          "value": "Check mappings and permissions"
+        },
+        {
+          "key": "cyclic / cyclic -l",
+          "value": "Find overwrite offsets"
+        },
+        {
+          "key": "checksec",
+          "value": "Review mitigations early"
         }
       ]
     },
@@ -278,6 +589,24 @@
       "title": "GDB MEMORY CHECK",
       "language": "bash",
       "code": "b *0x401000\nrun\nx/10i $rip\nx/16gx $rsp\ni r"
+    },
+    {
+      "type": "code",
+      "title": "COMPARE WATCH EXAMPLE",
+      "language": "bash",
+      "code": "b strcmp\nrun\nx/s $rdi\nx/s $rsi\nfinish\np/x $rax"
+    },
+    {
+      "type": "code",
+      "title": "RAW BUFFER COMPARE EXAMPLE",
+      "language": "bash",
+      "code": "b memcmp\nrun\nx/16xb $rdi\nx/16xb $rsi\np/d $rdx\nfinish\np/x $rax"
+    },
+    {
+      "type": "code",
+      "title": "PWNDBG QUICK START",
+      "language": "bash",
+      "code": "start\ncontext\nchecksec\nvmmap\ntelescope $rsp\nregs"
     }
   ]
 }
