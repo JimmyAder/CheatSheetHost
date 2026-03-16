@@ -146,6 +146,10 @@
           "value": "Print expression in decimal"
         },
         {
+          "key": "info functions",
+          "value": "List known functions (useful for discovering symbols)"
+        },
+        {
           "key": "info args",
           "value": "Show function args if symbols/debug info help"
         },
@@ -359,6 +363,14 @@
         {
           "key": "regs",
           "value": "Pretty register display"
+        },
+        {
+          "key": "set $rax = 0xdeadbeef",
+          "value": "Set a register value (works for any $reg)"
+        },
+        {
+          "key": "set $rip = $rip + 0x10",
+          "value": "Advance the instruction pointer"
         },
         {
           "key": "nearpc",
