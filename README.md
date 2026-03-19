@@ -24,7 +24,7 @@ A lightweight, content-driven web server for hosting interactive cheatsheets and
 
 1. Clone or download this repository:
    ```bash
-   git clone https://github.com/yourusername/CheatSheetHost.git
+   git clone https://github.com/JimmyAder/CheatSheetHost.git
    cd CheatSheetHost
    ```
 
@@ -201,6 +201,6 @@ This project is open source. Feel free to use, modify, and distribute.
 
 ## Support
 
-- For questions or issues, [open a GitHub issue](https://github.com/yourusername/CheatSheetHost/issues)
+- For questions or issues, [open a GitHub issue](https://github.com/JimmyAder/CheatSheetHost/issues)
 - Contributions welcome via pull requests
 - Star the repo if you find it useful!</content>
